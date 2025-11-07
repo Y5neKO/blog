@@ -12,30 +12,127 @@
 <meta property="article:tag" content="逆向">
 <meta property="article:tag" content="笔记">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://y5neko.github.io/image/Pasted%20image%2020240328112106.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://y5neko.github.io/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?d4f6675f179ef53324ef6281fc51a93c";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script><script>const GLOBAL_CONFIG = {
+<meta name="twitter:image" content="https://y5neko.github.io/image/Pasted%20image%2020240328112106.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "数据结构",
+  "url": "https://y5neko.github.io/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/",
+  "image": "https://y5neko.github.io/image/Pasted%20image%2020240328112106.png",
+  "datePublished": "2024-03-27T16:00:00.000Z",
+  "dateModified": "2024-08-20T03:52:28.000Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Y5neKO",
+      "url": "https://y5neko.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/icon.png"><link rel="canonical" href="https://y5neko.github.io/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  noticeOutdate: {"limitDay":1000,"position":"top","messagePrev":"这篇文章最后更新时间是","messageNext":"天之前，描述可能已经失效，请谨慎辨别."},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
   copy: {
     success: '复制成功',
-    error: '复制错误',
+    error: '复制失败',
     noSupport: '浏览器不支持'
   },
   relativeDate: {
     homepage: false,
     post: false
   },
-  runtime: '天',
+  runtime: '',
   dateSuffix: {
     just: '刚刚',
     min: '分钟前',
@@ -43,15 +140,15 @@
     day: '天前',
     month: '个月前'
   },
-  copyright: {"limitCount":50,"languages":{"author":"作者: Y5neKO","link":"链接: ","source":"来源: Y5neKO's Blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  copyright: undefined,
   lightbox: 'fancybox',
-  Snackbar: {"chs_to_cht":"你已切换为繁体中文","cht_to_chs":"你已切换为简体中文","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
     buttonText: '加载更多'
   },
   isPhotoFigcaption: false,
-  islazyload: true,
+  islazyloadPlugin: true,
   isAnchor: true,
   percent: {
     toc: true,
@@ -60,120 +157,19 @@
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: '数据结构',
-  isPost: true,
-  isHome: false,
   isHighlightShrink: false,
   isToc: true,
-  postUpdate: '2024-08-20 11:52:28'
-}</script><script>(win=>{
-      win.saveToLocal = {
-        set: (key, value, ttl) => {
-          if (ttl === 0) return
-          const now = Date.now()
-          const expiry = now + ttl * 86400000
-          const item = {
-            value,
-            expiry
-          }
-          localStorage.setItem(key, JSON.stringify(item))
-        },
-      
-        get: key => {
-          const itemStr = localStorage.getItem(key)
-      
-          if (!itemStr) {
-            return undefined
-          }
-          const item = JSON.parse(itemStr)
-          const now = Date.now()
-      
-          if (now > item.expiry) {
-            localStorage.removeItem(key)
-            return undefined
-          }
-          return item.value
-        }
-      }
-    
-      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        script.onerror = reject
-        script.onload = script.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          script.onload = script.onreadystatechange = null
-          resolve()
-        }
-
-        Object.keys(attr).forEach(key => {
-          script.setAttribute(key, attr[key])
-        })
-
-        document.head.appendChild(script)
-      })
-    
-      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onerror = reject
-        link.onload = link.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          link.onload = link.onreadystatechange = null
-          resolve()
-        }
-        document.head.appendChild(link)
-      })
-    
-      win.activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-          const now = new Date()
-          const hour = now.getHours()
-          const isNight = hour <= 6 || hour >= 18
-          if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-          else if (t === 'light') activateLightMode()
-          else activateDarkMode()
-        
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-      const detectApple = () => {
-        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-          document.documentElement.classList.add('apple')
-        }
-      }
-      detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
 </head><body><script>window.paceOptions = {
   restartOnPushState: false
 }
 
-document.addEventListener('pjax:send', () => {
+btf.addGlobalFn('pjaxSend', () => {
   Pace.restart()
-})
-</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "/img/friend_404.gif" data-lazy-src="https://q1.qlogo.cn/g?b=qq&amp;nk=1727058834&amp;s=640" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/image/Pasted%20image%2020240328112106.png')"><nav id="nav"><span id="blog-info"><a href="/" title="Y5neKO's Blog"><span class="site-name">Y5neKO's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">数据结构</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-27T16:00:00.000Z" title="发表于 2024-03-28 00:00:00">2024-03-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:52:28.000Z" title="更新于 2024-08-20 11:52:28">2024-08-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="数据结构"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="PE结构"><a href="#PE结构" class="headerlink" title="PE结构"></a>PE结构</h1><img src= "/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328112106.png" alt="20240328112106.png" />
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/friend_404.gif" data-lazy-src="/image/123.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/image/Pasted%20image%2020240328112106.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Y5neKO's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">数据结构</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">数据结构<a class="post-edit-link" href="null_posts/数据结构.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-27T16:00:00.000Z" title="发表于 2024-03-28 00:00:00">2024-03-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:52:28.000Z" title="更新于 2024-08-20 11:52:28">2024-08-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.4k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>7分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;这篇文章最后更新时间是&quot;,&quot;messageNext&quot;:&quot;天之前，描述可能已经失效，请谨慎辨别.&quot;,&quot;postUpdate&quot;:&quot;2024-08-20 11:52:28&quot;}" hidden></div><h1 id="PE结构"><a href="#PE结构" class="headerlink" title="PE结构"></a>PE结构</h1><img src="/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328112106.png" alt="20240328112106.png" />
 ## 概念
 **PE**(Portable Execute)文件是Windows下可执行文件的总称，常见的有 DLL，EXE，OCX，SYS 等。它是微软在 UNIX 平台的 COFF(通用对象文件格式)基础上制作而成。最初设计用来提高程序在不同操作系统上的移植性，但实际上这种文件格式仅用在 Windows 系列操作系统下。PE文件是指 32 位可执行文件，也称为PE32。64位的可执行文件称为 PE+ 或 PE32+，是PE(PE32)的一种扩展形式(不是PE64)。
 
@@ -210,14 +206,14 @@ document.addEventListener('pjax:send', () => {
 <p>从某个角度来讲，虚拟内存是对基址寄存器和界限寄存器的一种综合。虚拟存储器的基本思想是程序，数据，堆栈的总的大小可以超过物理存储器的大小，<strong>操作系统把当前使用的部分保留在内存中，而把其他未被使用的部分保存在磁盘上</strong>。</p>
 <h2 id="线性地址"><a href="#线性地址" class="headerlink" title="线性地址"></a>线性地址</h2><p><strong>线性地址</strong>（Linear Address） 是逻辑地址到物理地址变换之间的中间层。程序代码会产生逻辑地址，或说是段中的偏移地址，加上相应段的基地址就生成了一个线性地址。如果启用了分页机制，那么线性地址能再经变换以产生一个物理地址。若没有启用分页机制，那么线性地址直接就是物理地址。Intel 80386 的线性地址空间容量为 4G（2的32次方即32根地址总线寻址）</p>
 <h2 id="逻辑地址"><a href="#逻辑地址" class="headerlink" title="逻辑地址"></a>逻辑地址</h2><p><strong>逻辑地址</strong>（Logical Address） 是指由程式产生的和段相关的偏移地址部分。例如，你在进行 C 语言指针编程中，能读取指针变量本身值( &amp;操作 )，实际上这个值就是逻辑地址，他是相对于你当前进程数据段的地址，不和绝对物理地址相干。只有在 Intel 实模式下，逻辑地址才和物理地址相等（因为实模式没有分段或分页机制，cpu不进行自动地址转换）；逻辑也就是在Intel保护模式下程式执行代码段限长内的偏移地址（假定代码段、数据段如果完全相同）</p>
-<h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><img src= "/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328112958.png" alt="20240328112958.png" />
+<h2 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h2><img src="/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328112958.png" alt="20240328112958.png" />
 大部分虚拟内存中使用一种**分页**(paging)的技术。
 
 <p>当程序执行下面的指令时，它把地址为1000的内存单元的内容复制到REG中。地址可以通过索引、基址寄存器、段寄存器或其他方式产生。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MOV REG, <span class="number">1000</span></span><br></pre></td></tr></table></figure>
 
 <p>由程序产生的这些地址称为<strong>虚拟地址</strong>(VA)，他们构成了一个<strong>虚拟地址空间</strong>。在没有虚拟内存的计算机上，系统直接将虚拟地址送到内存总线上，读写操作使用具有同样地址的物理内存字；在使用虚拟内存的情况下，虚拟地址不是被直接送到内存的总线上，而是被送到<strong>内存管理单元（MMU）,MMU把虚拟地址映射为物理内存地址</strong>。</p>
-<h2 id="MMU"><a href="#MMU" class="headerlink" title="MMU"></a>MMU</h2><p>实现VA到PA的映射（因此实现方便的动态内存管理）； 实现不同的访问权限。<br><img src= "/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328113338.png" alt="20240328113338.png" /><br>虚拟地址空间按照固定大小划分称为<strong>页面</strong>（page）的若干单元。在物理内存中对应的单元称为<strong>页框</strong>（page frame）。页面和页框的大小通常是一样的。实际系统中的页面大小从512字节到1GB。</p>
+<h2 id="MMU"><a href="#MMU" class="headerlink" title="MMU"></a>MMU</h2><p>实现VA到PA的映射（因此实现方便的动态内存管理）； 实现不同的访问权限。<br><img src="/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328113338.png" alt="20240328113338.png" /><br>虚拟地址空间按照固定大小划分称为<strong>页面</strong>（page）的若干单元。在物理内存中对应的单元称为<strong>页框</strong>（page frame）。页面和页框的大小通常是一样的。实际系统中的页面大小从512字节到1GB。</p>
 <h2 id="转换检测缓冲区"><a href="#转换检测缓冲区" class="headerlink" title="转换检测缓冲区"></a>转换检测缓冲区</h2><p><strong>转换检测缓冲区（Translation Lookaside Buffer，TLB）</strong>：虚拟地址到物理地址的映射必须非常快，所以采用TLB，<strong>将虚拟地址直接映射到物理地址</strong>。</p>
 <h2 id="基地址和偏移地址"><a href="#基地址和偏移地址" class="headerlink" title="基地址和偏移地址"></a>基地址和偏移地址</h2><p>cpu和内存之间通过20条地址总线相连接，地址总线就是cpu通过地址找到对应的内存的物理数据的传递工具</p>
 <p>例如：有20根地址总线的，总共能拥有 2^20&#x3D;1048576个不相同的地址，一个地址代表一个存储单元，一个存储单元能够存储1byte数据，总共能存储1M数据。即20根地址总线一共能够处理1M的内存数据</p>
@@ -227,7 +223,7 @@ document.addEventListener('pjax:send', () => {
 <p>例如：0BAC:0100</p>
 <p>0BAC是基地址，0100是偏移地址，必须要转换成 20位（也就是5位的16进制）才能在20位地址总线中传递，才能达到 1G的数据访问范围：<strong>内存的物理地址 &#x3D;基地址*16+偏移地址</strong>，即<code>0BAC*16+0100=0BAC0+0100=0BBC0H</code>，实际传递二进制就是：0000 1011 1011 1100 0000</p>
 <p>32位汇编 32根地址总线总共能够直接找到2的32次方个地址,也就是4294967296 byte数据 也就是 4G的内存,而且不在将内存分成一段一段 所有的内存区域都是连续的</p>
-<h1 id="PE文件与内存映像"><a href="#PE文件与内存映像" class="headerlink" title="PE文件与内存映像"></a>PE文件与内存映像</h1><img src= "/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328113559.png" alt="20240328113559.png" />
+<h1 id="PE文件与内存映像"><a href="#PE文件与内存映像" class="headerlink" title="PE文件与内存映像"></a>PE文件与内存映像</h1><img src="/img/friend_404.gif" data-lazy-src="/image/Pasted image 20240328113559.png" alt="20240328113559.png" />
 在执行一个PE文件的时候，windows并不在一开始就将整个文件读入内存的，而是采用与内存映射文件类似的机制。也就是说，windows 装载器在装载的时候仅仅建立好虚拟地址和PE文件之间的映射关系。
 当且仅当真正执行到某个内存页中的指令或者访问某一页中的数据时，这个页面才会被从磁盘提交到物理内存，这种机制使文件装入的速度和文件大小没有太大的关系。
 
@@ -235,53 +231,55 @@ document.addEventListener('pjax:send', () => {
 <p><strong>ImageBase字段</strong></p>
 <p>ImageBase字段作用是指出文件的优先装入地址。也就是说当文件被执行时,如果可能的话,Windows优先将文件装入 到由ImageBase字段指定的地址中,只有指定的地址已经被其他模块使用时,文件才被装入到其他地址中。链接器产生可执行文件的时候对应这个地址来生成机器码,所以当文件被装入这个地址时不需 要进行重定位操作,装入的速度最快,如果文件被装载到其他地址的话,将不得不进行重定位操作, 这样就要慢一点。</p>
 <p>对于EXE文件来说,由于每个文件总是使用独立的虚拟地址空间,优先装入地址不可能被其他模 块占据,所以EXE总是能够按照这个地址装入,这也意味着EXE文件不再需要重定位信息。对于DLL 文件来说,由于多个DLL文件全部使用宿主EXE文件的地址空间,不能保证优先装入地址没有被其他 的DLL使用,所以DLL文件中必须包含重定位信息以防万一。因此,在IMAGE_FILE_HEADER结构的 Characteristics 字段中,DLL文件对应的IMAGE_FILE_RELOCS_STRIPPED 位总是为0,而EXE文件的这个标志位总是为1。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://y5neko.github.io">Y5neKO</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://y5neko.github.io/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">https://y5neko.github.io/2024/03/28/数据结构/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://y5neko.github.io" target="_blank">Y5neKO's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post_share"><div class="social-share" data-image="/image/Pasted%20image%2020240328112106.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">汇编语言</div></div></a></div><div class="next-post pull-right"><a href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240503162825.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">一些关于JavaFX的记录</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240329103100.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-25</div><div class="title">IDA Pro操作指南</div></div></a></div><div><a href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-27</div><div class="title">汇编语言</div></div></a></div><div><a href="/2023/03/06/Java%E5%9F%BA%E7%A1%80/" title="Java学习笔记"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/image-20220429122054874.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-03-06</div><div class="title">Java学习笔记</div></div></a></div><div><a href="/2024/08/20/Java%E5%AE%89%E5%85%A8/" title="Java安全基础"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/image-20230808142318172.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-20</div><div class="title">Java安全基础</div></div></a></div><div><a href="/2023/03/29/Linux%E8%BF%90%E7%BB%B4%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" title="Linux运维疑难杂症"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/337b44cbd42152857ed44339a37e878c.jpg" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-03-29</div><div class="title">Linux运维疑难杂症</div></div></a></div><div><a href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法"><img class="cover" src= "/img/friend_404.gif" data-lazy-src="/image/image-20241105145700564.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-09</div><div class="title">MSI样本分析方法</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PE%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">PE结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PA-%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80-VA-%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80-RVA-%E7%9B%B8%E5%AF%B9%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80"><span class="toc-number">2.</span> <span class="toc-text">PA(物理地址)&#x2F;VA(虚拟地址)&#x2F;RVA(相对虚拟地址)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80"><span class="toc-number">2.2.</span> <span class="toc-text">线性地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80"><span class="toc-number">2.3.</span> <span class="toc-text">逻辑地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%A1%B5"><span class="toc-number">2.4.</span> <span class="toc-text">分页</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MMU"><span class="toc-number">2.5.</span> <span class="toc-text">MMU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%A3%80%E6%B5%8B%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-number">2.6.</span> <span class="toc-text">转换检测缓冲区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E5%9C%B0%E5%9D%80%E5%92%8C%E5%81%8F%E7%A7%BB%E5%9C%B0%E5%9D%80"><span class="toc-number">2.7.</span> <span class="toc-text">基地址和偏移地址</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PE%E6%96%87%E4%BB%B6%E4%B8%8E%E5%86%85%E5%AD%98%E6%98%A0%E5%83%8F"><span class="toc-number">3.</span> <span class="toc-text">PE文件与内存映像</span></a></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2025 By Y5neKO</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
-  if (typeof pangu === 'object') pangu.autoSpacingPage()
-  else {
-    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
-      .then(() => {
-        pangu.autoSpacingPage()
-      })
-  }
-}
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://y5neko.github.io">Y5neKO</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://y5neko.github.io/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">https://y5neko.github.io/2024/03/28/数据结构/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://y5neko.github.io" target="_blank">Y5neKO's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></div><div class="post-share"><div class="social-share" data-image="/image/Pasted%20image%2020240328112106.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240503162825.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">一些关于JavaFX的记录</div></div><div class="info-2"><div class="info-item-1">环境准备下载对应版本JavaFX，解压出来如下：bin目录下所有dll放入jdk的bin目录，lib目录下的所有jar包添加进项目库，src为source源。 Scene图 ## 概述 Scene图是一种树形数据结构，它排列（和分组）图形对象以便于逻辑表示。 它还允许图形引擎以最有效的方式渲染对象， 完全或部分跳过在最终图像中看不到的对象。 下图显示了JavaFX场景图架构的一个示例。  在架构的最顶端有一个`Stage`。 `Stage`是原生操作系统窗口的JavaFX表示。 在任何给定的时间，阶段可以有一个单一的`Scene`连接到它。 场景是JavaFX场景图的容器。 JavaFX `Stage`图中的所有元素都表示为`Node`对象。 节点有三种类型：根、分支和叶。 根节点是唯一没有父节点的节点 直接包含在一个场景中，如上图所示。 分支和叶节点之间的区别在于叶节点没有子节点。 在scene图中，父节点的许多属性由子节点共享。 例如，应用于父节点的转换或事件也将递归地应用于其子节点。 因此，可以将复杂的节点层次结构视为单个节点，以简化编程模型。 我们将在后面的章节中探索转换...</div></div></div></a><a class="pagination-related" href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">汇编语言</div></div><div class="info-2"><div class="info-item-1">概念CPU 只负责计算，本身不具备智能。你输入一条指令（instruction），它就运行一次，然后停下来，等待下一条指令。这些指令都是二进制的，称为操作码（opcode），比如加法指令就是00000011。编译器的作用，就是将高级语言写好的程序，翻译成一条条操作码。对于人类来说，二进制程序是不可读的，根本看不出来机器干了什么。为了解决可读性的问题，以及偶尔的编辑需求，就诞生了汇编语言。 汇编语言是二进制指令的文本形式，与指令是一一对应的关系。比如，加法指令00000011写成汇编语言就是 ADD。只要还原成二进制，汇编语言就可以被 CPU 直接执行，所以它是最底层的低级语言。 寄存器CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU 的运算速度远高于内存的读写速度，为了避免被拖慢，CPU 都自带一级缓存和二级缓存。基本上，CPU 缓存可以看作是读写速度较快的内存。 但是，CPU 缓存还是不够快，另外数据在缓存里面的地址是不固定的，CPU 每次读写都要寻址也会拖慢速度。因此，除了缓存之外，CPU 还自带了寄存器（re...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240329103100.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-25</div><div class="info-item-2">IDA Pro操作指南</div></div><div class="info-2"><div class="info-item-1">摘要工具nm将源文件编译成目标文件时，编译器必须嵌入一些全局(外部)符号的位置信息，以便链接器在组合目标文件以创建可执行文件时，能够解析对这些符号的引用。除非被告知要去除最终的可执行文件中的符号，否则，链接器通常会将目标文件中的符号带入最终的可执行文件中。根据nm手册的描述，这一实用工具的目的是“列举目标文件中的符号”。使用rm检查中间目标文件(扩展名为.0的文件，而非可执行文件)时，默认输出结果是在这个文件中声明的任何函数和全局变量的名称。nm实用工具的样本输出如下所示。从中可以看到，m列出了每一个符号以及与符号有关的一些信息。其中的字母表示所列举的符号的类型。前面的例子中出现了以下字母，下面逐一解释。U，未定义符号，通常为外部符号引用。T，在文本部分定义的符号，通常为函数名称。t，在文本部分定义的局部符号。在C程序中，这个符号通常等同于一个静态函数。D，已初始化的数据值。C，未初始化的数据值。  大写字母表示全局符号，小写字母则表示局部符号。请参阅nm手册了解有关字母代码的详细解释。  如果使用nm列举可执行文件中的符号，将会有更多信息显示出来。在链接过程中，符号被解析成虚拟...</div></div></div></a><a class="pagination-related" href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-27</div><div class="info-item-2">汇编语言</div></div><div class="info-2"><div class="info-item-1">概念CPU 只负责计算，本身不具备智能。你输入一条指令（instruction），它就运行一次，然后停下来，等待下一条指令。这些指令都是二进制的，称为操作码（opcode），比如加法指令就是00000011。编译器的作用，就是将高级语言写好的程序，翻译成一条条操作码。对于人类来说，二进制程序是不可读的，根本看不出来机器干了什么。为了解决可读性的问题，以及偶尔的编辑需求，就诞生了汇编语言。 汇编语言是二进制指令的文本形式，与指令是一一对应的关系。比如，加法指令00000011写成汇编语言就是 ADD。只要还原成二进制，汇编语言就可以被 CPU 直接执行，所以它是最底层的低级语言。 寄存器CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU 的运算速度远高于内存的读写速度，为了避免被拖慢，CPU 都自带一级缓存和二级缓存。基本上，CPU 缓存可以看作是读写速度较快的内存。 但是，CPU 缓存还是不够快，另外数据在缓存里面的地址是不固定的，CPU 每次读写都要寻址也会拖慢速度。因此，除了缓存之外，CPU 还自带了寄存器（re...</div></div></div></a><a class="pagination-related" href="/2023/03/06/Java%E5%9F%BA%E7%A1%80/" title="Java学习笔记"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/image-20220429122054874.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-03-06</div><div class="info-item-2">Java学习笔记</div></div><div class="info-2"><div class="info-item-1">JavaIntellij快捷关键字sout：快速生成system.out输出语句 100.fori：以变量i为计数快速生成循环100次的for循环 数组名.fori：以变量i为计数快速生成遍历数组的循环 psvm：快速生成静态main方法 Ctrl + Alt + M：快速从代码中提取方法并生成方法 Alt + INSERT -&gt; Constructor：快速生成构造函数 Alt + INSERT -&gt; getter and setter：快速生成JavaBean的设置器和获取器 运算符加数字相加：直接运算，遵从隐式转换规则； 字符串相加：只要有字符串参与运算时，就变成连接符，不再进行加运算；从左到右逐个执行； 字符相加：字符之间或与数字进行运算时，会先转换为对应的ascii码值再进行运算：1 + &#39;a&#39; = 98； 自增自减 单独一行使用时++a和a++相同 参与了计算时，++a先运算再赋值，a++先赋值再运算  拓展赋值运算符+&#x3D;、-&#x3D;等 先将左边与右边进行运算，再赋值给左边：a += 1  》 a = a + 1 包含了强制类...</div></div></div></a><a class="pagination-related" href="/2023/03/29/Linux%E8%BF%90%E7%BB%B4%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/" title="Linux运维疑难杂症"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/337b44cbd42152857ed44339a37e878c.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2023-03-29</div><div class="info-item-2">Linux运维疑难杂症</div></div><div class="info-2"><div class="info-item-1">Linux运维Docker介绍Linux 发展出了另一种虚拟化技术：Linux 容器（Linux Containers，缩写为 LXC）。 Linux 容器不是模拟一个完整的操作系统，而是对进程进行隔离。或者说，在正常进程的外面套了一个保护层。对于容器里面的进程来说，它接触到的各种资源都是虚拟的，从而实现与底层系统的隔离。 由于容器是进程级别的，相比虚拟机有很多优势。 ①启动快：容器里面的应用，直接就是底层系统的一个进程，而不是虚拟机内部的进程。所以，启动容器相当于启动本机的一个进程，而不是启动一个操作系统，速度就快很多。 ②资源占用少：容器只占用需要的资源，不占用那些没有用到的资源；虚拟机由于是完整的操作系统，不可避免要占用所有资源。另外，多个容器可以共享资源，虚拟机都是独享资源。 ③体积小：容器只要包含用到的组件即可，而虚拟机是整个操作系统的打包，所以容器文件比虚拟机文件要小很多。 总之，容器有点像轻量级的虚拟机，能够提供虚拟化的环境，但是成本开销小得多。 Docker 属于 Linux 容器的一种封装，提供简单易用的容器使用接口。它是目前最流行的 Linux 容器解决方案。...</div></div></div></a><a class="pagination-related" href="/2024/09/12/Nanocore%E6%81%B6%E6%84%8F%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90/" title="Nanocore恶意程序分析"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/image-20240912170857294.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-12</div><div class="info-item-2">Nanocore恶意程序分析</div></div><div class="info-2"><div class="info-item-1">Nanocore恶意程序分析前言最近在外网发现一个有意思的Nanocore恶意脚本的样本，给大家分享一下 123SHA256: c6092b1788722f82280d3dca79784556df6b8203f4d8f271c327582dd9dcf6e1Sharelink: https://virusshare.com/file?2596ef126fb57cdf2ba563b05444ad0ec6dad6a0083b3c309ca9595e64ad0615    初步分析 源文件的大部分均为干扰用的字符串，直接正则替换提取出来，拿到核心代码 ^(REM|&#39;).*  混淆技术分析首先chr字符串可以很容易想到数值转换字符，我们用第一个混淆具体拆开分析一下  chr函数：数值转字符 479808：十进制数值，用于参与后续的计算 CLng函数：vbs中的CLng 函数，用于把表达式转换为长整型（Long）类型 &amp;H1B90：这是vbs中的十六进制写法，代表0x1B90 以及其余的算术运算符  直接做计算得到：  同理第二个混淆：  通过python批量提取所有混淆后的...</div></div></div></a><a class="pagination-related" href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240503162825.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-03</div><div class="info-item-2">一些关于JavaFX的记录</div></div><div class="info-2"><div class="info-item-1">环境准备下载对应版本JavaFX，解压出来如下：bin目录下所有dll放入jdk的bin目录，lib目录下的所有jar包添加进项目库，src为source源。 Scene图 ## 概述 Scene图是一种树形数据结构，它排列（和分组）图形对象以便于逻辑表示。 它还允许图形引擎以最有效的方式渲染对象， 完全或部分跳过在最终图像中看不到的对象。 下图显示了JavaFX场景图架构的一个示例。  在架构的最顶端有一个`Stage`。 `Stage`是原生操作系统窗口的JavaFX表示。 在任何给定的时间，阶段可以有一个单一的`Scene`连接到它。 场景是JavaFX场景图的容器。 JavaFX `Stage`图中的所有元素都表示为`Node`对象。 节点有三种类型：根、分支和叶。 根节点是唯一没有父节点的节点 直接包含在一个场景中，如上图所示。 分支和叶节点之间的区别在于叶节点没有子节点。 在scene图中，父节点的许多属性由子节点共享。 例如，应用于父节点的转换或事件也将递归地应用于其子节点。 因此，可以将复杂的节点层次结构视为单个节点，以简化编程模型。 我们将在后面的章节中探索转换...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#PE%E7%BB%93%E6%9E%84"><span class="toc-number">1.</span> <span class="toc-text">PE结构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PA-%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80-VA-%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80-RVA-%E7%9B%B8%E5%AF%B9%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80"><span class="toc-number">2.</span> <span class="toc-text">PA(物理地址)&#x2F;VA(虚拟地址)&#x2F;RVA(相对虚拟地址)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7%E5%9C%B0%E5%9D%80"><span class="toc-number">2.2.</span> <span class="toc-text">线性地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80"><span class="toc-number">2.3.</span> <span class="toc-text">逻辑地址</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E9%A1%B5"><span class="toc-number">2.4.</span> <span class="toc-text">分页</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MMU"><span class="toc-number">2.5.</span> <span class="toc-text">MMU</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%A3%80%E6%B5%8B%E7%BC%93%E5%86%B2%E5%8C%BA"><span class="toc-number">2.6.</span> <span class="toc-text">转换检测缓冲区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E5%9C%B0%E5%9D%80%E5%92%8C%E5%81%8F%E7%A7%BB%E5%9C%B0%E5%9D%80"><span class="toc-number">2.7.</span> <span class="toc-text">基地址和偏移地址</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#PE%E6%96%87%E4%BB%B6%E4%B8%8E%E5%86%85%E5%AD%98%E6%98%A0%E5%83%8F"><span class="toc-number">3.</span> <span class="toc-text">PE文件与内存映像</span></a></li></ol></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By Y5neKO</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
 
-function panguInit () {
-  if (false){
-    GLOBAL_CONFIG_SITE.isPost && panguFn()
-  } else {
-    panguFn()
-  }
-}
-
-document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
-  const initGitalk = () => {
-    const gitalk = new Gitalk(Object.assign({
-      clientID: '4d2d58bafea4c026b68f',
-      clientSecret: '61a3976d66520d7bfd80d2de0e9e60fe31820603',
-      repo: 'y5neko.github.io',
-      owner: 'Y5neKO',
-      admin: ['Y5neKO'],
-      id: 'd137843cfae296418eec8d2b5faf459c',
-      updateCountCallback: commentCount
-    },null))
-
-    gitalk.render('gitalk-container')
-  }
-
-  const loadGitalk = async() => {
-    if (typeof Gitalk === 'function') initGitalk()
-    else {
-      await getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
-      await getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
-      initGitalk()
-    }
-  }
-  
   const commentCount = n => {
     const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
     if (isCommentCount) {
       isCommentCount.textContent= n
     }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: '4d2d58bafea4c026b68f',
+      clientSecret: '61a3976d66520d7bfd80d2de0e9e60fe31820603',
+      repo: 'y5neko.github.io',
+      owner: 'Y5neKO',
+      admin: ['Y5neKO'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'd137843cfae296418eec8d2b5faf459c'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
   }
 
   if ('Gitalk' === 'Gitalk' || !false) {
@@ -290,70 +288,189 @@ document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-
   } else {
     window.loadOtherComment = loadGitalk
   }
-})()</script></div><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
 
-var pjax = new Pjax({
-  elements: 'a:not([target="_blank"])',
-  selectors: pjaxSelectors,
-  cacheBust: false,
-  analytics: false,
-  scrollRestoration: false
-})
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
 
-document.addEventListener('pjax:send', function () {
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
 
-  // removeEventListener
-  btf.removeGlobalFnEvent('pjax')
-  btf.removeGlobalFnEvent('themeChange')
+  generateHtml: (array, ele) => {
+    let result = ''
 
-  document.getElementById('rightside').classList.remove('rightside-show')
-  
-  if (window.aplayers) {
-    for (let i = 0; i < window.aplayers.length; i++) {
-      if (!window.aplayers[i].options.fixed) {
-        window.aplayers[i].destroy()
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (false && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '暂无评论'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'github-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const findTrueUrl = (array, ele) => {
+    Promise.all(array.map(item =>
+      fetch(item.url).then(resp => resp.json()).then(data => {
+        let urlArray = data.body ? data.body.match(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/ig) : []
+        if (!Array.isArray(urlArray) || urlArray.length === 0) {
+          urlArray = [`${data.html_url}`]
+        }
+        if (data.user.login === 'utterances-bot') {
+          return urlArray.pop()
+        } else {
+          return urlArray.shift()
+        }
+      })
+    )).then(res => {
+        array = array.map((i,index)=> {
+          return {
+            ...i,
+            url: res[index]
+          }
+        })
+
+        btf.saveToLocal.set(keyName, JSON.stringify(array), 3/(60*24))
+        generateHtml(array, ele)
+    });
+  }
+
+  const getComment = ele => {
+    fetch('https://api.github.com/repos/Y5neKO/y5neko.github.io/issues/comments?sort=updated&direction=desc&per_page=3&page=1',{
+      "headers": {
+        Accept: 'application/vnd.github.v3.html+json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        const githubArray = data.map(item => {
+          return {
+            'avatar': item.user.avatar_url,
+            'content': changeContent(item.body_html || item.body),
+            'nick': item.user.login,
+            'url': item.issue_url,
+            'date': item.updated_at
+          }
+        })
+        findTrueUrl(githubArray, ele)
+      }).catch(e => {
+        console.error(e)
+        ele.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+  }
+  run(keyName, getComment)
+})</script><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
       }
     }
   }
 
-  typeof typed === 'object' && typed.destroy()
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
 
-  //reset readmode
-  const $bodyClassList = document.body.classList
-  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
 
-  typeof disqusjs === 'object' && disqusjs.destroy()
-})
-
-document.addEventListener('pjax:complete', function () {
-  window.refreshFn()
-
-  document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
   })
 
-  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
-
-  typeof panguInit === 'function' && panguInit()
-
-  // google analytics
-  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
-
-  // baidu analytics
-  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
-
-  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
-
-  // prismjs
-  typeof Prism === 'object' && Prism.highlightAll()
-})
-
-document.addEventListener('pjax:error', e => {
-  if (e.request.status === 404) {
-    pjax.loadUrl('/404.html')
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div></body></html>

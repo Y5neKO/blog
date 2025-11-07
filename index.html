@@ -1,38 +1,129 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Y5neKO's Blog - 行走于黑白之间</title><meta name="author" content="Y5neKO"><meta name="copyright" content="Y5neKO"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Y5neKO个人博客">
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Y5neKO's Blog - 行走于黑白之间</title><meta name="author" content="Y5neKO"><meta name="copyright" content="Y5neKO"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="人像深海的鱼，若不燃烧自己，便会永处黑暗.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Y5neKO&#39;s Blog">
 <meta property="og:url" content="https://y5neko.github.io/index.html">
 <meta property="og:site_name" content="Y5neKO&#39;s Blog">
-<meta property="og:description" content="Y5neKO个人博客">
+<meta property="og:description" content="人像深海的鱼，若不燃烧自己，便会永处黑暗.">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://q1.qlogo.cn/g?b=qq&nk=1727058834&s=640">
+<meta property="og:image" content="https://y5neko.github.io/image/123.jpeg">
 <meta property="article:author" content="Y5neKO">
 <meta property="article:tag" content="Y5neKO">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://q1.qlogo.cn/g?b=qq&nk=1727058834&s=640"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://y5neko.github.io/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?d4f6675f179ef53324ef6281fc51a93c";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script><script>const GLOBAL_CONFIG = {
+<meta name="twitter:image" content="https://y5neko.github.io/image/123.jpeg"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Y5neKO's Blog",
+  "alternateName": [
+    "行走于黑白之间",
+    "y5neko.github.io"
+  ],
+  "url": "https://y5neko.github.io/"
+}</script><link rel="shortcut icon" href="/image/icon.png"><link rel="canonical" href="https://y5neko.github.io/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
   root: '/',
   algolia: undefined,
-  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
-  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
-  noticeOutdate: {"limitDay":1000,"position":"top","messagePrev":"这篇文章最后更新时间是","messageNext":"天之前，描述可能已经失效，请谨慎辨别."},
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  localSearch: {"path":"/search.xml","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
   copy: {
     success: '复制成功',
-    error: '复制错误',
+    error: '复制失败',
     noSupport: '浏览器不支持'
   },
   relativeDate: {
     homepage: false,
     post: false
   },
-  runtime: '天',
+  runtime: '',
   dateSuffix: {
     just: '刚刚',
     min: '分钟前',
@@ -40,15 +131,15 @@
     day: '天前',
     month: '个月前'
   },
-  copyright: {"limitCount":50,"languages":{"author":"作者: Y5neKO","link":"链接: ","source":"来源: Y5neKO's Blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  copyright: undefined,
   lightbox: 'fancybox',
-  Snackbar: {"chs_to_cht":"你已切换为繁体中文","cht_to_chs":"你已切换为简体中文","day_to_night":"你已切换为深色模式","night_to_day":"你已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
   infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
     buttonText: '加载更多'
   },
   isPhotoFigcaption: false,
-  islazyload: true,
+  islazyloadPlugin: true,
   isAnchor: true,
   percent: {
     toc: true,
@@ -57,234 +148,20 @@
   autoDarkmode: false
 }</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
   title: 'Y5neKO\'s Blog',
-  isPost: false,
-  isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2025-11-07 14:46:44'
-}</script><script>(win=>{
-      win.saveToLocal = {
-        set: (key, value, ttl) => {
-          if (ttl === 0) return
-          const now = Date.now()
-          const expiry = now + ttl * 86400000
-          const item = {
-            value,
-            expiry
-          }
-          localStorage.setItem(key, JSON.stringify(item))
-        },
-      
-        get: key => {
-          const itemStr = localStorage.getItem(key)
-      
-          if (!itemStr) {
-            return undefined
-          }
-          const item = JSON.parse(itemStr)
-          const now = Date.now()
-      
-          if (now > item.expiry) {
-            localStorage.removeItem(key)
-            return undefined
-          }
-          return item.value
-        }
-      }
-    
-      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        script.onerror = reject
-        script.onload = script.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          script.onload = script.onreadystatechange = null
-          resolve()
-        }
-
-        Object.keys(attr).forEach(key => {
-          script.setAttribute(key, attr[key])
-        })
-
-        document.head.appendChild(script)
-      })
-    
-      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onerror = reject
-        link.onload = link.onreadystatechange = function() {
-          const loadState = this.readyState
-          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
-          link.onload = link.onreadystatechange = null
-          resolve()
-        }
-        document.head.appendChild(link)
-      })
-    
-      win.activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
-      }
-      win.activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
-      const t = saveToLocal.get('theme')
-    
-          const now = new Date()
-          const hour = now.getHours()
-          const isNight = hour <= 6 || hour >= 18
-          if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
-          else if (t === 'light') activateLightMode()
-          else activateDarkMode()
-        
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        if (asideStatus === 'hide') {
-          document.documentElement.classList.add('hide-aside')
-        } else {
-          document.documentElement.classList.remove('hide-aside')
-        }
-      }
-    
-      const detectApple = () => {
-        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
-          document.documentElement.classList.add('apple')
-        }
-      }
-      detectApple()
-    })(window)</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
+  pageType: 'home'
+}</script><meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
 </head><body><script>window.paceOptions = {
   restartOnPushState: false
 }
 
-document.addEventListener('pjax:send', () => {
+btf.addGlobalFn('pjaxSend', () => {
   Pace.restart()
-})
-</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "/img/friend_404.gif" data-lazy-src="https://q1.qlogo.cn/g?b=qq&amp;nk=1727058834&amp;s=640" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/image/1234.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Y5neKO's Blog"><span class="site-name">Y5neKO's Blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Y5neKO's Blog</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/Y5neKO" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:a1727058834@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://space.bilibili.com/35199034" target="_blank" title="Bilibili"><i class="fa-brands fa-bilibili" style="color: #fb7299;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left"><a href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/wps22.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一次攻防演练从未授权访问到getshell过程"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程">一次攻防演练从未授权访问到getshell过程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-24T16:00:00.000Z" title="发表于 2025-07-25 00:00:00">2025-07-25</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-25T15:19:58.242Z" title="更新于 2025-07-25 23:19:58">2025-07-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83/">攻防演练</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></span></div><div class="content">信息搜集首先从目标主页进行信息搜集，发现授权文件
- 
-经过一番查找发现是《微厦在线学习考试系统》的特征项目地址：https://github.com/weishakeji/LearningSystem
-查了一下公开的漏洞，可能是因为比较冷门，基本没有，后来cnvd查了下发现洞还挺多的
- 
-但都是一些比较老的，也拿不到poc，遂尝试自行挖掘
-前台任意用户登录前台存在短信登录功能，我们短信登录抓包，调试分析前端源码
- 
-发现js存在一个校验验证码的过程，这里几乎可以确定能绕过
-后续分析出短信登录校验逻辑为：
-1前端校验验证码，md5(手机号+6位验证码) = 短信验证码响应包的result值
+}, 'pace_restart')
 
-抓包观察验证码响应包
- 
-这里的result就是密文，搓个脚本直接爆破
-123456789101112131415161718import hashlib# 固定前缀prefix = &quot;18781348729&quot;# 目标 MD5target_hash = &quot;xxxxxxxxxxxxxxxxxxxxxxxxx&quot;# 暴力破解六位验证码for i in range(1 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/image-20241105145700564.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MSI样本分析方法"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法">MSI样本分析方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-08T16:00:00.000Z" title="发表于 2024-12-09 00:00:00">2024-12-09</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-09T08:07:39.000Z" title="更新于 2024-12-09 16:07:39">2024-12-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">前言
-攻击者经常选择使用MSI安装程序来交付和执行恶意代码，因为这些文件可以将有害的可执行文件和脚本嵌入到看似合法的软件包中，从而逃避检测。滥用MSI文件中的自定义操作来在安装过程中运行恶意代码，并配置安装程序从远程服务器下载其他恶意软件。通过伪装成合法软件，攻击者欺骗用户执行这些文件，MSI安装程序由受信任的Windows服务处理，使恶意软件更容易绕过安全产品并保持未被检测到，这种隐身性和多功能性的结合使MSI文件成为网络攻击的一个有吸引力的载体。
-
-MSI（Microsoft MSI）文件是包含有关软件安装的详细信息的数据库文件，存储安装过程中的数据，包括配置设置、要安装的文件和安装说明，确保结构化和高效的软件部署。此外，MSI文件提供修复和更新现有安装的功能，使其成为软件管理的通用和高效工具，设计用于与负责应用程序管理的核心Windows组件Windows Installer服务一起使用，这种标准化和多功能性也使MSI文件成为恶意利用的常见目标。
-因此笔者在这里总结了有关MSI文件的结构和功能的详细信息和分析方法，用以分析这些文件的潜在威胁。
-MSI和EXE的区别首先我们来了解一 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/image-20240914112951079.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从Kimsuky组织msc攻击样本到GrimResource"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource">从Kimsuky组织msc攻击样本到GrimResource</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-13T16:00:00.000Z" title="发表于 2024-09-14 00:00:00">2024-09-14</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-14T09:14:04.000Z" title="更新于 2024-09-14 17:14:04">2024-09-14</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">从Kimsuky组织msc攻击样本到GrimResource前言近期笔者通过外网监测到一个Kimsuky组织的msc攻击样本，这里对样本进行分析，以及谈谈其利用的攻击技术
-1SHA256: 57e9b7d1c18684a4e8b3688c454e832833e063019ed808fd69186c4e20df930a
-
-msc文件
-MSC(Microsoft Snap-In Control)文件，是微软管理控制台MMC(Microsoft Management Console)用来添加&#x2F;删除的嵌入式管理单元文件。通常通过MMC来管理，可点击“文件”菜单中的“添加&#x2F;删除管理单元”操作来管理当前系统中已经安装的MSC文件。可以点击开始&#x2F;运行，然后输入下列文件名就可以打开相应的控制窗口。
-
-看到这个后缀，很多人可能已经想到了组策略编辑器(gpedit.msc)，该样本即是通过msc文件实现攻击，利用特制的管理保存控制台 (MSC) 文件来使用 Microsoft 管理控制台 ( MMC ) 获得完整的代码执行并逃避安全防御
-这项技术最早由Elastic 安全实验 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/09/12/Nanocore%E6%81%B6%E6%84%8F%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90/" title="Nanocore恶意程序分析"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/image-20240912170857294.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Nanocore恶意程序分析"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/09/12/Nanocore%E6%81%B6%E6%84%8F%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90/" title="Nanocore恶意程序分析">Nanocore恶意程序分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-11T16:00:00.000Z" title="发表于 2024-09-12 00:00:00">2024-09-12</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-12T09:28:06.000Z" title="更新于 2024-09-12 17:28:06">2024-09-12</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">Nanocore恶意程序分析前言最近在外网发现一个有意思的Nanocore恶意脚本的样本，给大家分享一下
-123SHA256: c6092b1788722f82280d3dca79784556df6b8203f4d8f271c327582dd9dcf6e1Sharelink: https://virusshare.com/file?2596ef126fb57cdf2ba563b05444ad0ec6dad6a0083b3c309ca9595e64ad0615
-
-
-
-初步分析
-源文件的大部分均为干扰用的字符串，直接正则替换提取出来，拿到核心代码
-^(REM|&#39;).*
-
-混淆技术分析首先chr字符串可以很容易想到数值转换字符，我们用第一个混淆具体拆开分析一下
-
-chr函数：数值转字符
-479808：十进制数值，用于参与后续的计算
-CLng函数：vbs中的CLng 函数，用于把表达式转换为长整型（Long）类型
-&amp;H1B90：这是vbs中的十六进制写法，代表0x1B90
-以及其余的算术运算符
-
-直接做计算得到：
-
-同理第二个混淆：
-
-通过python批量提取所有混淆后的pay ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/08/20/Java%E5%AE%89%E5%85%A8/" title="Java安全基础"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/image-20230808142318172.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java安全基础"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/08/20/Java%E5%AE%89%E5%85%A8/" title="Java安全基础">Java安全基础</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-19T16:00:00.000Z" title="发表于 2024-08-20 00:00:00">2024-08-20</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:32:54.000Z" title="更新于 2024-08-20 11:32:54">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/Java%E5%AE%89%E5%85%A8/">Java安全</a></span></div><div class="content">Java安全基础Note类和对象的关系类是对象的抽象，而对象是类的具体实例。类是抽象的，不占用内存，而对象是具体的，占用存储空间。类是用于创建对象的蓝图，它是一个定义包括在特定类型的对象中的方法和变量的软件模板。
-类与对象的关系就如模具和铸件的关系 类的实例化结果就是对象，而对一类对象的抽象就是类，类描述了一组有相同属性和相同方法的对象。
-class类的newInstance方法class的newInstance()方法,需要我们类中存在无参的构造器，并且能直接访问，它通过无参的构造器来实例化，而一旦我们类中不存在无参构造器，那么第一种方法就不行了
-getMethods 和 getDeclaredMethods 方法的区别getMethods：获取当前类或父类或父接口的 public 修饰的字段；包含接口中 default 修饰的方法 (JDK1.8)。
-getDeclaredMethods： 获取当前类的所有方法；包括 protected&#x2F;默认&#x2F;private 修饰的方法；不包括父类 、接口 public 修饰的方法。
-反射Runtime.exec和Process ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/08/09/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E9%9D%A2%E8%AF%95%E5%88%86%E5%8C%BA%E5%9D%97%E6%80%BB%E7%BB%93/" title="渗透测试面试分区块总结"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/image-20230926215400707.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="渗透测试面试分区块总结"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/08/09/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E9%9D%A2%E8%AF%95%E5%88%86%E5%8C%BA%E5%9D%97%E6%80%BB%E7%BB%93/" title="渗透测试面试分区块总结">渗透测试面试分区块总结</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-08T16:00:00.000Z" title="发表于 2024-08-09 00:00:00">2024-08-09</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T06:02:56.000Z" title="更新于 2024-08-20 14:02:56">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%9D%A2%E8%AF%95/">面试</a></span></div><div class="content">域渗透123456789101112131415161718192021222324#DC	WindowsServer2012域名：y5neko.comNAT：192.168.1.129静态：192.168.1.250密码：Y5NEKO0/Administrator:dc@123NetBIOS域名：Y5NEKO0其他域用户账号密码：user1:win71@123user2:win72@123普通域管理员账号密码：admin:admin@123yueshu:yueshu@123yeushu1:yueshu1@123ziyuanyueshu:ziyuanyueshu@123SYSVOL漏洞测试密码：user@123#WIN71	Windows7密码：Administrator:win71@123静态：192.168.1.3#KaliNAT：192.168.1.128
-
-
-
-信息搜集判断域环境1net config workstation
-
-找域控123456#fscan扫描netbios./fscan_amd64 -np -m netbios -h 192.168.1.0/24#net g ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240503162825.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一些关于JavaFX的记录"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录">一些关于JavaFX的记录</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-02T16:00:00.000Z" title="发表于 2024-05-03 00:00:00">2024-05-03</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:25:04.000Z" title="更新于 2024-08-20 11:25:04">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></span></div><div class="content">环境准备下载对应版本JavaFX，解压出来如下：bin目录下所有dll放入jdk的bin目录，lib目录下的所有jar包添加进项目库，src为source源。
-Scene图
-## 概述
-Scene图是一种树形数据结构，它排列（和分组）图形对象以便于逻辑表示。 它还允许图形引擎以最有效的方式渲染对象， 完全或部分跳过在最终图像中看不到的对象。 下图显示了JavaFX场景图架构的一个示例。
-
-在架构的最顶端有一个`Stage`。 `Stage`是原生操作系统窗口的JavaFX表示。 在任何给定的时间，阶段可以有一个单一的`Scene`连接到它。 场景是JavaFX场景图的容器。
-JavaFX `Stage`图中的所有元素都表示为`Node`对象。 节点有三种类型：根、分支和叶。 根节点是唯一没有父节点的节点 直接包含在一个场景中，如上图所示。 分支和叶节点之间的区别在于叶节点没有子节点。
-在scene图中，父节点的许多属性由子节点共享。 例如，应用于父节点的转换或事件也将递归地应用于其子节点。 因此，可以将复杂的节点层次结构视为单个节点，以简化编程模型。 我们将在后面的章节中探索转换和事件 ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240328112106.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据结构"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构">数据结构</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-27T16:00:00.000Z" title="发表于 2024-03-28 00:00:00">2024-03-28</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:52:28.000Z" title="更新于 2024-08-20 11:52:28">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">PE结构
-## 概念
-**PE**(Portable Execute)文件是Windows下可执行文件的总称，常见的有 DLL，EXE，OCX，SYS 等。它是微软在 UNIX 平台的 COFF(通用对象文件格式)基础上制作而成。最初设计用来提高程序在不同操作系统上的移植性，但实际上这种文件格式仅用在 Windows 系列操作系统下。PE文件是指 32 位可执行文件，也称为PE32。64位的可执行文件称为 PE+ 或 PE32+，是PE(PE32)的一种扩展形式(不是PE64)。
-
-
-
-
-名称
-描述
-
-
-
-地址
-是 “虚拟地址” 而不是“物理地址”。不是“物理地址”的原因shi数据在内存的位置经常在变，这样可以节省内存开支、避开错误的内存位置等的优势。同时用户并不需要知道具体的“真实地址”，因为系统自己会为程序准备好内存空间的(只要内存足够大)
-
-
-节
-节 是 PE 文件中 代码 或 数据 的基本单元。原则上讲，节只分为 “代码节” 和 “数据节” 。
-
-
-镜像文件
-包含以 EXE 文件为代表的 “可执行文件”、以DLL文件为代表的“动态链接库”。因为他们常常被直接“复制”到内存，有“ ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="汇编语言"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言">汇编语言</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-26T16:00:00.000Z" title="发表于 2024-03-27 00:00:00">2024-03-27</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:50:26.000Z" title="更新于 2024-08-20 11:50:26">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">概念CPU 只负责计算，本身不具备智能。你输入一条指令（instruction），它就运行一次，然后停下来，等待下一条指令。这些指令都是二进制的，称为操作码（opcode），比如加法指令就是00000011。编译器的作用，就是将高级语言写好的程序，翻译成一条条操作码。对于人类来说，二进制程序是不可读的，根本看不出来机器干了什么。为了解决可读性的问题，以及偶尔的编辑需求，就诞生了汇编语言。
-汇编语言是二进制指令的文本形式，与指令是一一对应的关系。比如，加法指令00000011写成汇编语言就是 ADD。只要还原成二进制，汇编语言就可以被 CPU 直接执行，所以它是最底层的低级语言。
-寄存器CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU 的运算速度远高于内存的读写速度，为了避免被拖慢，CPU 都自带一级缓存和二级缓存。基本上，CPU 缓存可以看作是读写速度较快的内存。
-但是，CPU 缓存还是不够快，另外数据在缓存里面的地址是不固定的，CPU 每次读写都要寻址也会拖慢速度。因此，除了缓存之外，CPU 还自带了寄存器（regis ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南"><img class="post-bg" src= "/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240329103100.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="IDA Pro操作指南"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南">IDA Pro操作指南</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-24T16:00:00.000Z" title="发表于 2024-03-25 00:00:00">2024-03-25</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:49:16.000Z" title="更新于 2024-08-20 11:49:16">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">摘要工具nm将源文件编译成目标文件时，编译器必须嵌入一些全局(外部)符号的位置信息，以便链接器在组合目标文件以创建可执行文件时，能够解析对这些符号的引用。除非被告知要去除最终的可执行文件中的符号，否则，链接器通常会将目标文件中的符号带入最终的可执行文件中。根据nm手册的描述，这一实用工具的目的是“列举目标文件中的符号”。使用rm检查中间目标文件(扩展名为.0的文件，而非可执行文件)时，默认输出结果是在这个文件中声明的任何函数和全局变量的名称。nm实用工具的样本输出如下所示。从中可以看到，m列出了每一个符号以及与符号有关的一些信息。其中的字母表示所列举的符号的类型。前面的例子中出现了以下字母，下面逐一解释。U，未定义符号，通常为外部符号引用。T，在文本部分定义的符号，通常为函数名称。t，在文本部分定义的局部符号。在C程序中，这个符号通常等同于一个静态函数。D，已初始化的数据值。C，未初始化的数据值。
-
-大写字母表示全局符号，小写字母则表示局部符号。请参阅nm手册了解有关字母代码的详细解释。
-
-如果使用nm列举可执行文件中的符号，将会有更多信息显示出来。在链接过程中，符号被解析成虚拟地址( ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "/img/friend_404.gif" data-lazy-src="https://q1.qlogo.cn/g?b=qq&amp;nk=1727058834&amp;s=640" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Y5neKO</div><div class="author-info__description">Hi, I'm Y5neKO.</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Y5neKO"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Y5neKO" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:a1727058834@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://space.bilibili.com/35199034" target="_blank" title="Bilibili"><i class="fa-brands fa-bilibili" style="color: #fb7299;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">Hi, I'm Y5neKO.</div></div><div class="sticky_layout"><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 1.3em; color: rgb(103, 128, 168)">逆向</a><a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 1.45em; color: rgb(82, 84, 117)">笔记</a><a href="/tags/Java/" style="font-size: 1.15em; color: rgb(31, 50, 44)">Java</a><a href="/tags/%E5%BC%80%E5%8F%91/" style="font-size: 1.15em; color: rgb(31, 112, 113)">开发</a><a href="/tags/Java%E5%AE%89%E5%85%A8/" style="font-size: 1.15em; color: rgb(9, 34, 87)">Java安全</a><a href="/tags/Linux/" style="font-size: 1.15em; color: rgb(132, 179, 87)">Linux</a><a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 1.15em; color: rgb(135, 10, 197)">运维</a><a href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/" style="font-size: 1.3em; color: rgb(85, 138, 160)">样本分析</a><a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 1.15em; color: rgb(70, 80, 84)">前端</a><a href="/tags/%E5%85%8D%E6%9D%80/" style="font-size: 1.15em; color: rgb(29, 44, 33)">免杀</a><a href="/tags/hvv/" style="font-size: 1.15em; color: rgb(74, 8, 107)">hvv</a><a href="/tags/%E9%9D%A2%E7%BB%8F/" style="font-size: 1.15em; color: rgb(112, 127, 170)">面经</a><a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 1.15em; color: rgb(133, 42, 118)">内网渗透</a><a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 1.15em; color: rgb(196, 109, 136)">渗透测试</a><a href="/tags/%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83/" style="font-size: 1.15em; color: rgb(114, 113, 179)">攻防演练</a><a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 1.15em; color: rgb(119, 37, 12)">代码审计</a><a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 1.15em; color: rgb(128, 145, 127)">面试</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>归档</span><a class="card-more-btn" href="/archives/" title="查看更多">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2025/07/"><span class="card-archive-list-date">七月 2025</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/12/"><span class="card-archive-list-date">十二月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/09/"><span class="card-archive-list-date">九月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/08/"><span class="card-archive-list-date">八月 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/03/"><span class="card-archive-list-date">三月 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/11/"><span class="card-archive-list-date">十一月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/03/"><span class="card-archive-list-date">三月 2023</span><span class="card-archive-list-count">2</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站资讯</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">15</div></div><div class="webinfo-item"><div class="item-name">已运行时间 :</div><div class="item-count" id="runtimeshow" data-publishDate="2017-08-08T16:00:00.000Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">119.8k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总访问量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-11-07T06:46:44.566Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2025 By Y5neKO</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><script>function panguFn () {
-  if (typeof pangu === 'object') pangu.autoSpacingPage()
-  else {
-    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
-      .then(() => {
-        pangu.autoSpacingPage()
-      })
-  }
-}
-
-function panguInit () {
-  if (false){
-    GLOBAL_CONFIG_SITE.isPost && panguFn()
-  } else {
-    panguFn()
-  }
-}
-
-document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>window.typedJSFn = {
-  init: (str) => {
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/friend_404.gif" data-lazy-src="/image/123.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url(/image/1234.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Y5neKO's Blog</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="site-info"><h1 id="site-title">Y5neKO's Blog</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/Y5neKO" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:a1727058834@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://space.bilibili.com/35199034" target="_blank" title="Bilibili"><i class="fa-brands fa-bilibili" style="color: #fb7299;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts nc" id="recent-posts"><div class="recent-post-items"><div class="recent-post-item"><div class="post_cover left"><a href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/wps22.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一次攻防演练从未授权访问到getshell过程"></a></div><div class="recent-post-info"><a class="article-title" href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程">一次攻防演练从未授权访问到getshell过程</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-07-24T16:00:00.000Z" title="发表于 2025-07-25 00:00:00">2025-07-25</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-07-25T15:19:58.242Z" title="更新于 2025-07-25 23:19:58">2025-07-25</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83/">攻防演练</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a></span></div><div class="content">信息搜集首先从目标主页进行信息搜集，发现授权文件   经过一番查找发现是《微厦在线学习考试系统》的特征项目地址：https://github.com/weishakeji/LearningSystem 查了一下公开的漏洞，可能是因为比较冷门，基本没有，后来cnvd查了下发现洞还挺多的   但都是一些比较老的，也拿不到poc，遂尝试自行挖掘 前台任意用户登录前台存在短信登录功能，我们短信登录抓包，调试分析前端源码   发现js存在一个校验验证码的过程，这里几乎可以确定能绕过 后续分析出短信登录校验逻辑为： 1前端校验验证码，md5(手机号+6位验证码) = 短信验证码响应包的result值  抓包观察验证码响应包   这里的result就是密文，搓个脚本直接爆破 123456789101112131415161718import hashlib# 固定前缀prefix = &quot;18781348729&quot;# 目标 MD5target_hash = &quot;xxxxxxxxxxxxxxxxxxxxxxxxx&quot;# 暴力破解六位验证码for i in rang...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/image-20241105145700564.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MSI样本分析方法"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法">MSI样本分析方法</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-08T16:00:00.000Z" title="发表于 2024-12-09 00:00:00">2024-12-09</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-09T08:07:39.000Z" title="更新于 2024-12-09 16:07:39">2024-12-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">前言 攻击者经常选择使用MSI安装程序来交付和执行恶意代码，因为这些文件可以将有害的可执行文件和脚本嵌入到看似合法的软件包中，从而逃避检测。滥用MSI文件中的自定义操作来在安装过程中运行恶意代码，并配置安装程序从远程服务器下载其他恶意软件。通过伪装成合法软件，攻击者欺骗用户执行这些文件，MSI安装程序由受信任的Windows服务处理，使恶意软件更容易绕过安全产品并保持未被检测到，这种隐身性和多功能性的结合使MSI文件成为网络攻击的一个有吸引力的载体。  MSI（Microsoft MSI）文件是包含有关软件安装的详细信息的数据库文件，存储安装过程中的数据，包括配置设置、要安装的文件和安装说明，确保结构化和高效的软件部署。此外，MSI文件提供修复和更新现有安装的功能，使其成为软件管理的通用和高效工具，设计用于与负责应用程序管理的核心Windows组件Windows Installer服务一起使用，这种标准化和多功能性也使MSI文件成为恶意利用的常见目标。 因此笔者在这里总结了有关MSI文件的结构和功能的详细信息和分析方法，用以分析这些文件的潜在威胁。 MSI和EXE的区别首先我们来...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/image-20240914112951079.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从Kimsuky组织msc攻击样本到GrimResource"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource">从Kimsuky组织msc攻击样本到GrimResource</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-13T16:00:00.000Z" title="发表于 2024-09-14 00:00:00">2024-09-14</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-14T09:14:04.000Z" title="更新于 2024-09-14 17:14:04">2024-09-14</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">从Kimsuky组织msc攻击样本到GrimResource前言近期笔者通过外网监测到一个Kimsuky组织的msc攻击样本，这里对样本进行分析，以及谈谈其利用的攻击技术 1SHA256: 57e9b7d1c18684a4e8b3688c454e832833e063019ed808fd69186c4e20df930a  msc文件 MSC(Microsoft Snap-In Control)文件，是微软管理控制台MMC(Microsoft Management Console)用来添加&#x2F;删除的嵌入式管理单元文件。通常通过MMC来管理，可点击“文件”菜单中的“添加&#x2F;删除管理单元”操作来管理当前系统中已经安装的MSC文件。可以点击开始&#x2F;运行，然后输入下列文件名就可以打开相应的控制窗口。  看到这个后缀，很多人可能已经想到了组策略编辑器(gpedit.msc)，该样本即是通过msc文件实现攻击，利用特制的管理保存控制台 (MSC) 文件来使用 Microsoft 管理控制台 ( MMC ) 获得完整的代码执行并逃避安全防御 这项技术最早由Elastic 安...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/09/12/Nanocore%E6%81%B6%E6%84%8F%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90/" title="Nanocore恶意程序分析"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/image-20240912170857294.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Nanocore恶意程序分析"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/09/12/Nanocore%E6%81%B6%E6%84%8F%E8%84%9A%E6%9C%AC%E5%88%86%E6%9E%90/" title="Nanocore恶意程序分析">Nanocore恶意程序分析</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-09-11T16:00:00.000Z" title="发表于 2024-09-12 00:00:00">2024-09-12</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-09-12T09:28:06.000Z" title="更新于 2024-09-12 17:28:06">2024-09-12</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/">样本分析</a></span></div><div class="content">Nanocore恶意程序分析前言最近在外网发现一个有意思的Nanocore恶意脚本的样本，给大家分享一下 123SHA256: c6092b1788722f82280d3dca79784556df6b8203f4d8f271c327582dd9dcf6e1Sharelink: https://virusshare.com/file?2596ef126fb57cdf2ba563b05444ad0ec6dad6a0083b3c309ca9595e64ad0615    初步分析 源文件的大部分均为干扰用的字符串，直接正则替换提取出来，拿到核心代码 ^(REM|&#39;).*  混淆技术分析首先chr字符串可以很容易想到数值转换字符，我们用第一个混淆具体拆开分析一下  chr函数：数值转字符 479808：十进制数值，用于参与后续的计算 CLng函数：vbs中的CLng 函数，用于把表达式转换为长整型（Long）类型 &amp;H1B90：这是vbs中的十六进制写法，代表0x1B90 以及其余的算术运算符  直接做计算得到：  同理第二个混淆：  通过python批量提取所有混淆后的...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/08/20/Java%E5%AE%89%E5%85%A8/" title="Java安全基础"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/image-20230808142318172.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java安全基础"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/08/20/Java%E5%AE%89%E5%85%A8/" title="Java安全基础">Java安全基础</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-19T16:00:00.000Z" title="发表于 2024-08-20 00:00:00">2024-08-20</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:32:54.000Z" title="更新于 2024-08-20 11:32:54">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E7%AC%94%E8%AE%B0/">笔记</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/Java%E5%AE%89%E5%85%A8/">Java安全</a></span></div><div class="content">Java安全基础Note类和对象的关系类是对象的抽象，而对象是类的具体实例。类是抽象的，不占用内存，而对象是具体的，占用存储空间。类是用于创建对象的蓝图，它是一个定义包括在特定类型的对象中的方法和变量的软件模板。 类与对象的关系就如模具和铸件的关系 类的实例化结果就是对象，而对一类对象的抽象就是类，类描述了一组有相同属性和相同方法的对象。 class类的newInstance方法class的newInstance()方法,需要我们类中存在无参的构造器，并且能直接访问，它通过无参的构造器来实例化，而一旦我们类中不存在无参构造器，那么第一种方法就不行了 getMethods 和 getDeclaredMethods 方法的区别getMethods：获取当前类或父类或父接口的 public 修饰的字段；包含接口中 default 修饰的方法 (JDK1.8)。 getDeclaredMethods： 获取当前类的所有方法；包括 protected&#x2F;默认&#x2F;private 修饰的方法；不包括父类 、接口 public 修饰的方法。 反射Runtime.exec和Proc...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/08/09/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E9%9D%A2%E8%AF%95%E5%88%86%E5%8C%BA%E5%9D%97%E6%80%BB%E7%BB%93/" title="渗透测试面试分区块总结"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/image-20230926215400707.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="渗透测试面试分区块总结"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/08/09/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E9%9D%A2%E8%AF%95%E5%88%86%E5%8C%BA%E5%9D%97%E6%80%BB%E7%BB%93/" title="渗透测试面试分区块总结">渗透测试面试分区块总结</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-08T16:00:00.000Z" title="发表于 2024-08-09 00:00:00">2024-08-09</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T06:02:56.000Z" title="更新于 2024-08-20 14:02:56">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%9D%A2%E8%AF%95/">面试</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%9D%A2%E8%AF%95/">面试</a></span></div><div class="content">域渗透123456789101112131415161718192021222324#DC	WindowsServer2012域名：y5neko.comNAT：192.168.1.129静态：192.168.1.250密码：Y5NEKO0/Administrator:dc@123NetBIOS域名：Y5NEKO0其他域用户账号密码：user1:win71@123user2:win72@123普通域管理员账号密码：admin:admin@123yueshu:yueshu@123yeushu1:yueshu1@123ziyuanyueshu:ziyuanyueshu@123SYSVOL漏洞测试密码：user@123#WIN71	Windows7密码：Administrator:win71@123静态：192.168.1.3#KaliNAT：192.168.1.128    信息搜集判断域环境1net config workstation  找域控123456#fscan扫描netbios./fscan_amd64 -np -m netbios -h 192.168.1.0/24#ne...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240503162825.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一些关于JavaFX的记录"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/05/03/%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8EJavaFX%E7%9A%84%E8%AE%B0%E5%BD%95/" title="一些关于JavaFX的记录">一些关于JavaFX的记录</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-05-02T16:00:00.000Z" title="发表于 2024-05-03 00:00:00">2024-05-03</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:25:04.000Z" title="更新于 2024-08-20 11:25:04">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a></span></div><div class="content">环境准备下载对应版本JavaFX，解压出来如下：bin目录下所有dll放入jdk的bin目录，lib目录下的所有jar包添加进项目库，src为source源。 Scene图 ## 概述 Scene图是一种树形数据结构，它排列（和分组）图形对象以便于逻辑表示。 它还允许图形引擎以最有效的方式渲染对象， 完全或部分跳过在最终图像中看不到的对象。 下图显示了JavaFX场景图架构的一个示例。  在架构的最顶端有一个`Stage`。 `Stage`是原生操作系统窗口的JavaFX表示。 在任何给定的时间，阶段可以有一个单一的`Scene`连接到它。 场景是JavaFX场景图的容器。 JavaFX `Stage`图中的所有元素都表示为`Node`对象。 节点有三种类型：根、分支和叶。 根节点是唯一没有父节点的节点 直接包含在一个场景中，如上图所示。 分支和叶节点之间的区别在于叶节点没有子节点。 在scene图中，父节点的许多属性由子节点共享。 例如，应用于父节点的转换或事件也将递归地应用于其子节点。 因此，可以将复杂的节点层次结构视为单个节点，以简化编程模型。 我们将在后面的章节中探索转换...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240328112106.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="数据结构"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构">数据结构</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-27T16:00:00.000Z" title="发表于 2024-03-28 00:00:00">2024-03-28</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:52:28.000Z" title="更新于 2024-08-20 11:52:28">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">PE结构 ## 概念 **PE**(Portable Execute)文件是Windows下可执行文件的总称，常见的有 DLL，EXE，OCX，SYS 等。它是微软在 UNIX 平台的 COFF(通用对象文件格式)基础上制作而成。最初设计用来提高程序在不同操作系统上的移植性，但实际上这种文件格式仅用在 Windows 系列操作系统下。PE文件是指 32 位可执行文件，也称为PE32。64位的可执行文件称为 PE+ 或 PE32+，是PE(PE32)的一种扩展形式(不是PE64)。     名称 描述    地址 是 “虚拟地址” 而不是“物理地址”。不是“物理地址”的原因shi数据在内存的位置经常在变，这样可以节省内存开支、避开错误的内存位置等的优势。同时用户并不需要知道具体的“真实地址”，因为系统自己会为程序准备好内存空间的(只要内存足够大)   节 节 是 PE 文件中 代码 或 数据 的基本单元。原则上讲，节只分为 “代码节” 和 “数据节” 。   镜像文件 包含以 EXE 文件为代表的 “可执行文件”、以DLL文件为代表的“动态链接库”。因为他们常常被直接“复制”到内存...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="汇编语言"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言">汇编语言</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-26T16:00:00.000Z" title="发表于 2024-03-27 00:00:00">2024-03-27</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:50:26.000Z" title="更新于 2024-08-20 11:50:26">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">概念CPU 只负责计算，本身不具备智能。你输入一条指令（instruction），它就运行一次，然后停下来，等待下一条指令。这些指令都是二进制的，称为操作码（opcode），比如加法指令就是00000011。编译器的作用，就是将高级语言写好的程序，翻译成一条条操作码。对于人类来说，二进制程序是不可读的，根本看不出来机器干了什么。为了解决可读性的问题，以及偶尔的编辑需求，就诞生了汇编语言。 汇编语言是二进制指令的文本形式，与指令是一一对应的关系。比如，加法指令00000011写成汇编语言就是 ADD。只要还原成二进制，汇编语言就可以被 CPU 直接执行，所以它是最底层的低级语言。 寄存器CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU 的运算速度远高于内存的读写速度，为了避免被拖慢，CPU 都自带一级缓存和二级缓存。基本上，CPU 缓存可以看作是读写速度较快的内存。 但是，CPU 缓存还是不够快，另外数据在缓存里面的地址是不固定的，CPU 每次读写都要寻址也会拖慢速度。因此，除了缓存之外，CPU 还自带了寄存器（re...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南"><img class="post-bg" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240329103100.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="IDA Pro操作指南"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南">IDA Pro操作指南</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-24T16:00:00.000Z" title="发表于 2024-03-25 00:00:00">2024-03-25</time><span class="article-meta-separator">|</span><i class="fas fa-history"></i><span class="article-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T03:49:16.000Z" title="更新于 2024-08-20 11:49:16">2024-08-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span><span class="article-meta tags"><span class="article-meta-separator">|</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><span class="article-meta-link">•</span><i class="fas fa-tag"></i><a class="article-meta__tags" href="/tags/%E7%AC%94%E8%AE%B0/">笔记</a></span></div><div class="content">摘要工具nm将源文件编译成目标文件时，编译器必须嵌入一些全局(外部)符号的位置信息，以便链接器在组合目标文件以创建可执行文件时，能够解析对这些符号的引用。除非被告知要去除最终的可执行文件中的符号，否则，链接器通常会将目标文件中的符号带入最终的可执行文件中。根据nm手册的描述，这一实用工具的目的是“列举目标文件中的符号”。使用rm检查中间目标文件(扩展名为.0的文件，而非可执行文件)时，默认输出结果是在这个文件中声明的任何函数和全局变量的名称。nm实用工具的样本输出如下所示。从中可以看到，m列出了每一个符号以及与符号有关的一些信息。其中的字母表示所列举的符号的类型。前面的例子中出现了以下字母，下面逐一解释。U，未定义符号，通常为外部符号引用。T，在文本部分定义的符号，通常为函数名称。t，在文本部分定义的局部符号。在C程序中，这个符号通常等同于一个静态函数。D，已初始化的数据值。C，未初始化的数据值。  大写字母表示全局符号，小写字母则表示局部符号。请参阅nm手册了解有关字母代码的详细解释。  如果使用nm列举可执行文件中的符号，将会有更多信息显示出来。在链接过程中，符号被解析成虚拟...</div></div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/friend_404.gif" data-lazy-src="/image/123.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Y5neKO</div><div class="author-info-description">人像深海的鱼，若不燃烧自己，便会永处黑暗.</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/Y5neKO" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:a1727058834@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://space.bilibili.com/35199034" target="_blank" title="Bilibili"><i class="fa-brands fa-bilibili" style="color: #fb7299;"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程"><img src="/img/friend_404.gif" data-lazy-src="/image/wps22.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一次攻防演练从未授权访问到getshell过程"/></a><div class="content"><a class="title" href="/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程">一次攻防演练从未授权访问到getshell过程</a><time datetime="2025-07-24T16:00:00.000Z" title="发表于 2025-07-25 00:00:00">2025-07-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法"><img src="/img/friend_404.gif" data-lazy-src="/image/image-20241105145700564.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MSI样本分析方法"/></a><div class="content"><a class="title" href="/2024/12/09/msi%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95/" title="MSI样本分析方法">MSI样本分析方法</a><time datetime="2024-12-08T16:00:00.000Z" title="发表于 2024-12-09 00:00:00">2024-12-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource"><img src="/img/friend_404.gif" data-lazy-src="/image/image-20240914112951079.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="从Kimsuky组织msc攻击样本到GrimResource"/></a><div class="content"><a class="title" href="/2024/09/14/%E4%BB%8EKimsuky%E7%BB%84%E7%BB%87msc%E6%94%BB%E5%87%BB%E6%A0%B7%E6%9C%AC%E5%88%B0GrimResource/" title="从Kimsuky组织msc攻击样本到GrimResource">从Kimsuky组织msc攻击样本到GrimResource</a><time datetime="2024-09-13T16:00:00.000Z" title="发表于 2024-09-14 00:00:00">2024-09-14</time></div></div></div></div><div class="card-widget" id="card-newest-comments"><div class="item-headline"><i class="fas fa-comment-dots"></i><span>最新评论</span></div><div class="aside-list"><span>加载中...</span></div></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>标签</span></div><div class="card-tag-cloud"><a href="/tags/Linux/" style="font-size: 1.1em; color: #999">Linux</a> <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" style="font-size: 1.1em; color: #999">渗透测试</a> <a href="/tags/%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83/" style="font-size: 1.1em; color: #999">攻防演练</a> <a href="/tags/%E5%BC%80%E5%8F%91/" style="font-size: 1.1em; color: #999">开发</a> <a href="/tags/%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/" style="font-size: 1.3em; color: #99a1ac">样本分析</a> <a href="/tags/%E8%BF%90%E7%BB%B4/" style="font-size: 1.1em; color: #999">运维</a> <a href="/tags/Java%E5%AE%89%E5%85%A8/" style="font-size: 1.1em; color: #999">Java安全</a> <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" style="font-size: 1.1em; color: #999">内网渗透</a> <a href="/tags/%E9%9D%A2%E8%AF%95/" style="font-size: 1.1em; color: #999">面试</a> <a href="/tags/%E9%80%86%E5%90%91/" style="font-size: 1.3em; color: #99a1ac">逆向</a> <a href="/tags/%E9%9D%A2%E7%BB%8F/" style="font-size: 1.1em; color: #999">面经</a> <a href="/tags/%E5%85%8D%E6%9D%80/" style="font-size: 1.1em; color: #999">免杀</a> <a href="/tags/hvv/" style="font-size: 1.1em; color: #999">hvv</a> <a href="/tags/Java/" style="font-size: 1.1em; color: #999">Java</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 1.5em; color: #99a9bf">笔记</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 1.1em; color: #999">前端</a> <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" style="font-size: 1.1em; color: #999">代码审计</a></div></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>网站信息</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章数目 :</div><div class="item-count">15</div></div><div class="webinfo-item"><div class="item-name">本站总字数 :</div><div class="item-count">119.8k</div></div><div class="webinfo-item"><div class="item-name">本站访客数 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站总浏览量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最后更新时间 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2025-11-07T08:23:20.963Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2025 By Y5neKO</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>window.typedJSFn = {
+  init: str => {
     window.typed = new Typed('#subtitle', Object.assign({
       strings: str,
       startDelay: 300,
@@ -293,97 +170,235 @@ document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-
       backSpeed: 50,
     }, null))
   },
-  run: (subtitleType) => {
+  run: subtitleType => {
     if (true) {
       if (typeof Typed === 'function') {
         subtitleType()
       } else {
-        getScript('https://cdn.jsdelivr.net/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
+        btf.getScript('https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.min.js').then(subtitleType)
       }
     } else {
       subtitleType()
     }
+  },
+  processSubtitle: (content, extraContents = []) => {
+    if (true) {
+      const sub = ["行走于黑白之间.","Walk between the black and white."].slice()
+
+      if (extraContents.length > 0) {
+        sub.unshift(...extraContents)
+      }
+
+      if (typeof content === 'string') {
+        sub.unshift(content)
+      } else if (Array.isArray(content)) {
+        sub.unshift(...content)
+      }
+
+      sub.length > 0 && typedJSFn.init(sub)
+    } else {
+      document.getElementById('subtitle').textContent = typeof content === 'string' ? content :
+        (Array.isArray(content) && content.length > 0 ? content[0] : '')
+    }
   }
 }
+btf.addGlobalFn('pjaxSendOnce', () => { typed.destroy() }, 'typedDestroy')
 </script><script>function subtitleType () {
-  getScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js').then(() => {
-    jinrishici.load(result =>{
-      if (true) {
-        const sub = ["行走于黑白之间.","Walk between the black and white."]
-        const content = result.data.content
-        sub.unshift(content)
-        typedJSFn.init(sub)
-      } else {
-        document.getElementById('subtitle').textContent = result.data.content
-      }
+  fetch('https://v1.hitokoto.cn')
+    .then(response => response.json())
+    .then(data => {
+      const from = '出自 ' + data.from
+      typedJSFn.processSubtitle(data.hitokoto, [from])
     })
-  })
+    .catch(err => {
+      console.error('Failed to get the Hitokoto API:', err)
+      typedJSFn.processSubtitle(["行走于黑白之间.","Walk between the black and white."])
+    })
 }
 typedJSFn.run(subtitleType)
-</script></div><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
 
-var pjax = new Pjax({
-  elements: 'a:not([target="_blank"])',
-  selectors: pjaxSelectors,
-  cacheBust: false,
-  analytics: false,
-  scrollRestoration: false
-})
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
 
-document.addEventListener('pjax:send', function () {
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
 
-  // removeEventListener
-  btf.removeGlobalFnEvent('pjax')
-  btf.removeGlobalFnEvent('themeChange')
+  generateHtml: (array, ele) => {
+    let result = ''
 
-  document.getElementById('rightside').classList.remove('rightside-show')
-  
-  if (window.aplayers) {
-    for (let i = 0; i < window.aplayers.length; i++) {
-      if (!window.aplayers[i].options.fixed) {
-        window.aplayers[i].destroy()
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (false && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '暂无评论'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'github-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const findTrueUrl = (array, ele) => {
+    Promise.all(array.map(item =>
+      fetch(item.url).then(resp => resp.json()).then(data => {
+        let urlArray = data.body ? data.body.match(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/ig) : []
+        if (!Array.isArray(urlArray) || urlArray.length === 0) {
+          urlArray = [`${data.html_url}`]
+        }
+        if (data.user.login === 'utterances-bot') {
+          return urlArray.pop()
+        } else {
+          return urlArray.shift()
+        }
+      })
+    )).then(res => {
+        array = array.map((i,index)=> {
+          return {
+            ...i,
+            url: res[index]
+          }
+        })
+
+        btf.saveToLocal.set(keyName, JSON.stringify(array), 3/(60*24))
+        generateHtml(array, ele)
+    });
+  }
+
+  const getComment = ele => {
+    fetch('https://api.github.com/repos/Y5neKO/y5neko.github.io/issues/comments?sort=updated&direction=desc&per_page=3&page=1',{
+      "headers": {
+        Accept: 'application/vnd.github.v3.html+json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        const githubArray = data.map(item => {
+          return {
+            'avatar': item.user.avatar_url,
+            'content': changeContent(item.body_html || item.body),
+            'nick': item.user.login,
+            'url': item.issue_url,
+            'date': item.updated_at
+          }
+        })
+        findTrueUrl(githubArray, ele)
+      }).catch(e => {
+        console.error(e)
+        ele.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+  }
+  run(keyName, getComment)
+})</script><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
       }
     }
   }
 
-  typeof typed === 'object' && typed.destroy()
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
 
-  //reset readmode
-  const $bodyClassList = document.body.classList
-  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
 
-  typeof disqusjs === 'object' && disqusjs.destroy()
-})
-
-document.addEventListener('pjax:complete', function () {
-  window.refreshFn()
-
-  document.querySelectorAll('script[data-pjax]').forEach(item => {
-    const newScript = document.createElement('script')
-    const content = item.text || item.textContent || item.innerHTML || ""
-    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
-    newScript.appendChild(document.createTextNode(content))
-    item.parentNode.replaceChild(newScript, item)
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
   })
 
-  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
-
-  typeof panguInit === 'function' && panguInit()
-
-  // google analytics
-  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
-
-  // baidu analytics
-  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
-
-  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
-
-  // prismjs
-  typeof Prism === 'object' && Prism.highlightAll()
-})
-
-document.addEventListener('pjax:error', e => {
-  if (e.request.status === 404) {
-    pjax.loadUrl('/404.html')
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
   }
-})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div></body></html>
