@@ -15,8 +15,96 @@
     <atom:link href="https://y5neko.github.io/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>人像深海的鱼，若不燃烧自己，便会永处黑暗.</description>
-    <pubDate>Sat, 24 Jan 2026 07:48:24 GMT</pubDate>
+    <pubDate>Thu, 19 Mar 2026 02:42:11 GMT</pubDate>
     <generator>http://hexo.io/</generator>
+    
+    <item>
+      <title>某国赛CTF逆向题目Writeup：re3</title>
+      <link>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are3/</link>
+      <guid>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are3/</guid>
+      <pubDate>Thu, 19 Mar 2026 04:30:00 GMT</pubDate>
+      
+        
+        
+          
+          
+      <description>&lt;h1 id=&quot;题目&quot;&gt;&lt;a href=&quot;#题目&quot; class=&quot;headerlink&quot; title=&quot;题目&quot;&gt;&lt;/a&gt;题目&lt;/h1&gt;&lt;p&gt;&lt;img</description>
+          
+        
+      
+      
+      
+      
+      <category domain="https://y5neko.github.io/categories/%E9%80%86%E5%90%91/">逆向</category>
+      
+      
+      <category domain="https://y5neko.github.io/tags/%E9%80%86%E5%90%91/">逆向</category>
+      
+      <category domain="https://y5neko.github.io/tags/CTF/">CTF</category>
+      
+      
+      <comments>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are3/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>某国赛CTF逆向题目Writeup：re2</title>
+      <link>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/</link>
+      <guid>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/</guid>
+      <pubDate>Thu, 19 Mar 2026 04:20:00 GMT</pubDate>
+      
+        
+        
+          
+          
+      <description>&lt;h1 id=&quot;脱壳&quot;&gt;&lt;a href=&quot;#脱壳&quot; class=&quot;headerlink&quot; title=&quot;脱壳&quot;&gt;&lt;/a&gt;脱壳&lt;/h1&gt;&lt;p&gt;010打开&lt;/p&gt;
+&lt;p&gt;&lt;img</description>
+          
+        
+      
+      
+      
+      
+      <category domain="https://y5neko.github.io/categories/%E9%80%86%E5%90%91/">逆向</category>
+      
+      
+      <category domain="https://y5neko.github.io/tags/%E9%80%86%E5%90%91/">逆向</category>
+      
+      <category domain="https://y5neko.github.io/tags/CTF/">CTF</category>
+      
+      
+      <comments>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/#disqus_thread</comments>
+      
+    </item>
+    
+    <item>
+      <title>某国赛CTF逆向题目Writeup：re1</title>
+      <link>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are1/</link>
+      <guid>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are1/</guid>
+      <pubDate>Thu, 19 Mar 2026 04:00:00 GMT</pubDate>
+      
+        
+        
+          
+          
+      <description>&lt;h1 id=&quot;题目&quot;&gt;&lt;a href=&quot;#题目&quot; class=&quot;headerlink&quot; title=&quot;题目&quot;&gt;&lt;/a&gt;题目&lt;/h1&gt;&lt;p&gt;&lt;img</description>
+          
+        
+      
+      
+      
+      
+      <category domain="https://y5neko.github.io/categories/%E9%80%86%E5%90%91/">逆向</category>
+      
+      
+      <category domain="https://y5neko.github.io/tags/%E9%80%86%E5%90%91/">逆向</category>
+      
+      <category domain="https://y5neko.github.io/tags/CTF/">CTF</category>
+      
+      
+      <comments>https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are1/#disqus_thread</comments>
+      
+    </item>
     
     <item>
       <title>Struts2 XXE漏洞（CVE-2025-68493）分析及复现</title>

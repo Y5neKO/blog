@@ -1,0 +1,517 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>某国赛CTF逆向题目Writeup：re2 | Y5neKO's Blog</title><meta name="author" content="Y5neKO"><meta name="copyright" content="Y5neKO"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="脱壳010打开  UPX改了特征码，版本5.1.0 直接拖到ida分析不出来 这里我们选择动态调试脱壳，先找OEP，f9运行到入口  触发TLS回调函数断点，停在了ret上 64位UPX壳中不会用一个明显的跨段jmp指令跳向OEP，而是把OEP的地址压入堆栈，然后执行一条ret指令，这样CPU就会把堆栈顶部的OEP地址当作返回地址弹出来，并跳转过去 我们直接f8过去  此时进入了系统DLL地址，不">
+<meta property="og:type" content="article">
+<meta property="og:title" content="某国赛CTF逆向题目Writeup：re2">
+<meta property="og:url" content="https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/index.html">
+<meta property="og:site_name" content="Y5neKO&#39;s Blog">
+<meta property="og:description" content="脱壳010打开  UPX改了特征码，版本5.1.0 直接拖到ida分析不出来 这里我们选择动态调试脱壳，先找OEP，f9运行到入口  触发TLS回调函数断点，停在了ret上 64位UPX壳中不会用一个明显的跨段jmp指令跳向OEP，而是把OEP的地址压入堆栈，然后执行一条ret指令，这样CPU就会把堆栈顶部的OEP地址当作返回地址弹出来，并跳转过去 我们直接f8过去  此时进入了系统DLL地址，不">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://y5neko.github.io/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png">
+<meta property="article:published_time" content="2026-03-19T04:20:00.000Z">
+<meta property="article:modified_time" content="2026-03-19T02:41:39.220Z">
+<meta property="article:author" content="Y5neKO">
+<meta property="article:tag" content="CTF">
+<meta property="article:tag" content="逆向">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://y5neko.github.io/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "某国赛CTF逆向题目Writeup：re2",
+  "url": "https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/",
+  "image": "https://y5neko.github.io/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png",
+  "datePublished": "2026-03-19T04:20:00.000Z",
+  "dateModified": "2026-03-19T02:41:39.220Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Y5neKO",
+      "url": "https://y5neko.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/image/icon.png"><link rel="canonical" href="https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const hour = new Date().getHours()
+          const isNight = hour <= 8 || hour >= 20
+          if (theme === undefined) isNight ? activateDarkMode() : activateLightMode()
+          else theme === 'light' ? activateLightMode() : activateDarkMode()
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.json","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '某国赛CTF逆向题目Writeup：re2',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/friend_404.gif" data-lazy-src="/image/123.jpeg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">8</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 项目</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/qq-xml-ip"><i class="fa-fw fab fa-github"></i><span> qq-xml-ip</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/CryptoTool"><i class="fa-fw fab fa-github"></i><span> CryptoTool</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5_VulnHub"><i class="fa-fw fab fa-github"></i><span> Y5_VulnHub</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ShiroEXP"><i class="fa-fw fab fa-github"></i><span> ShiroEXP</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ClosureVulnScanner"><i class="fa-fw fab fa-github"></i><span> ClosureVulnScanner</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Mon3trProject"><i class="fa-fw fab fa-github"></i><span> Mon3trProject</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Webshell-Collection"><i class="fa-fw fab fa-github"></i><span> Webshell-Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ExpAndPoc_Colection"><i class="fa-fw fab fa-github"></i><span> EXP&amp;POC_Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5-tools"><i class="fa-fw fab fa-github"></i><span> Y5-tools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ArknightsPriestess"><i class="fa-fw fab fa-github"></i><span> ArknightsPriestess</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/YCryptoTools"><i class="fa-fw fab fa-github"></i><span> YCryptoTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSRFxxk"><i class="fa-fw fab fa-github"></i><span> SSRFxxk</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/QuickRedTools"><i class="fa-fw fab fa-github"></i><span> QuickRedTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSReportTools"><i class="fa-fw fab fa-github"></i><span> SSReportTools</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Y5neKO's Blog</span></a><a class="nav-page-title" href="/"><span class="site-name">某国赛CTF逆向题目Writeup：re2</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 项目</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/qq-xml-ip"><i class="fa-fw fab fa-github"></i><span> qq-xml-ip</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/CryptoTool"><i class="fa-fw fab fa-github"></i><span> CryptoTool</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5_VulnHub"><i class="fa-fw fab fa-github"></i><span> Y5_VulnHub</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ShiroEXP"><i class="fa-fw fab fa-github"></i><span> ShiroEXP</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ClosureVulnScanner"><i class="fa-fw fab fa-github"></i><span> ClosureVulnScanner</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Mon3trProject"><i class="fa-fw fab fa-github"></i><span> Mon3trProject</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Webshell-Collection"><i class="fa-fw fab fa-github"></i><span> Webshell-Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ExpAndPoc_Colection"><i class="fa-fw fab fa-github"></i><span> EXP&amp;POC_Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5-tools"><i class="fa-fw fab fa-github"></i><span> Y5-tools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ArknightsPriestess"><i class="fa-fw fab fa-github"></i><span> ArknightsPriestess</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/YCryptoTools"><i class="fa-fw fab fa-github"></i><span> YCryptoTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSRFxxk"><i class="fa-fw fab fa-github"></i><span> SSRFxxk</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/QuickRedTools"><i class="fa-fw fab fa-github"></i><span> QuickRedTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSReportTools"><i class="fa-fw fab fa-github"></i><span> SSReportTools</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">某国赛CTF逆向题目Writeup：re2<a class="post-edit-link" href="https://github.com/Y5neKO/Y5neKO.github.com_config/edit/main/source/_posts/某国赛CTF逆向题目Writeup：re2.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-03-19T04:20:00.000Z" title="发表于 2026-03-19 12:20:00">2026-03-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-03-19T02:41:39.220Z" title="更新于 2026-03-19 10:41:39">2026-03-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E9%80%86%E5%90%91/">逆向</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>11分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;这篇文章最后更新时间是&quot;,&quot;messageNext&quot;:&quot;天之前，描述可能已经失效，请谨慎辨别.&quot;,&quot;postUpdate&quot;:&quot;2026-03-19 10:41:39&quot;}" hidden></div><h1 id="脱壳"><a href="#脱壳" class="headerlink" title="脱壳"></a>脱壳</h1><p>010打开</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099118_1773711437045-9227f7c6-a090-4643-9780-4ae1ef367530.png"></p>
+<p>UPX改了特征码，版本5.1.0</p>
+<p>直接拖到ida分析不出来</p>
+<p>这里我们选择动态调试脱壳，先找OEP，f9运行到入口</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099125_1773746248706-6b82504e-ffe7-426a-9d1f-3d2feea0e9cb.png"></p>
+<p>触发TLS回调函数断点，停在了ret上</p>
+<p>64位UPX壳中不会用一个明显的跨段jmp指令跳向OEP，而是把OEP的地址压入堆栈，然后执行一条ret指令，这样CPU就会把堆栈顶部的OEP地址当作返回地址弹出来，并跳转过去</p>
+<p>我们直接f8过去</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099132_1773747035659-1496bc0a-2ebc-4126-9e70-c415489bbc9d.png"></p>
+<p>此时进入了系统DLL地址，不用管，执行到用户代码</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099137_1773747146334-a82c09e2-4897-4b05-92f5-777d7e55ca14.png"></p>
+<p>标准的UPX壳保存环境的方式，步过4次</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099141_1773747283161-3ce490f8-5492-439b-99ae-9113512225f5.png"></p>
+<p>此时当前的栈顶已经被修改了，内存中转到RSP，在栈顶位置下硬件断点，然后一直f9到触发硬件断点</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099145_1773747428473-0e5edbe0-97ab-4d21-ac82-ae5acb3a827e.png"></p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099148_1773747610647-1981840d-661b-4667-a11c-ac8afcd15762.png"></p>
+<p>此时正在恢复保存的寄存器状态，最后的jmp即是尾部跳转，直接f4过去，然后步过一下</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099153_1773747819696-2bc07d9e-0dad-43a7-8a5e-6f9987312066.png"></p>
+<p>可以看到已经解密完成，0x4014E0就是OEP</p>
+<p>打开Scylla插件搜索IAT</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099156_1773748027537-7037a21e-3acc-4ff3-8512-deb227197065.png"></p>
+<p>找到两个IAT大小，因为这个exe只有几十kb，528字节的输入表正好，选择否，然后获取输入表</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099160_1773749584018-1a97a08d-4e6f-4b5e-bbc6-f1c43f487a47.png"></p>
+<p>dump之后修复得到最终脱壳后的程序</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099163_1773749654899-4925aafb-0c10-401f-b556-1fc999fd307f.png"></p>
+<p>运行报错，但不影响ida分析</p>
+<h1 id="第一层EXE"><a href="#第一层EXE" class="headerlink" title="第一层EXE"></a>第一层EXE</h1><p>通过ida逆向</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099163_1773718104110-2bbf85d4-7a04-4ec1-a0de-0a5e208e3279.png"></p>
+<p>可以看到这里是获取了用户的输入并和Str2进行比较，Str 为 NGeQwv8eCRpINEcO</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099165_1773718320212-6ce00805-655e-4734-9bc1-1894d344a32d.png"></p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099166_1773718341739-a65be098-b9dc-41e9-95c6-9c4b0256d56e.png"></p>
+<p>标准的windows可执行文件</p>
+<p>如果正确就会通过sub_401660函数进行base64解码并向缓存路径内写入一个随机名称的exe，直接执行原文件输入密码就能得到</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099168_1773718421910-9114c287-8818-4775-8f5b-95bc0a460b3f.png"></p>
+<h1 id="第二层EXE"><a href="#第二层EXE" class="headerlink" title="第二层EXE"></a>第二层EXE</h1><p>运行发现需要输入key</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099168_1773718938070-404089b3-f1af-40f0-bf68-ff3412d8bc6a.png"></p>
+<p>继续通过ida逆向这个文件，通过main函数找到处理逻辑（sub_401550函数）</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099169_1773718974665-eaeaacd9-6a14-432c-8ec4-1c01f525c6af.png"></p>
+<p>分析可知，这里的逻辑也是接收用户输入的key，然后通过nullsub_3函数判断key是否正确</p>
+<p>中间的do-while步骤是优化后的strlen函数实现，输入长度不超过240</p>
+<p>现在我们的思路就是分析nullsub_3函数，不过nullsub在ida中代表为只有一个ret的空函数，说明针对反编译器做了修改，我们需要看看到底是不是真的空函数</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099170_1773732614740-5f8a10fc-0076-42fd-a776-d8d318f9074a.png"></p>
+<p>跟进后发现是一个奇怪的hello节，应该就是题目提示了</p>
+<p>这里我们选择通过x64dbg进行动态调试，首先加载后找到主逻辑函数地址</p>
+<p>查找Enter the key关键字引用</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099171_1773732821005-52e0d551-3de6-4eef-8b49-98f1fa8b17fe.png"></p>
+<p>ida中找到地址</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099171_1773732976932-b7827ae9-def5-4c50-8eee-2e977dfc9b15.png"></p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099172_1773733171531-c404333a-35ea-4122-a9df-302f162601f3.png"></p>
+<p>输出Faild和Success中间的call就是，直接跳转然后下断点0x401623</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099173_1773733588868-5ca09f96-0e27-45bb-b686-1d36b69170f5.png"></p>
+<p>然后一直f9运行到等待用户输入，返回窗口随便输入一串key：12345678</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099174_1773733707377-ea54698e-3979-4925-9b4d-1509d7f53a9c.png"></p>
+<p>跟进</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099174_1773733784069-a21016a4-7d5b-4416-ab87-4f8e3cc60f23.png"></p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099175_1773734325150-5ea19f95-5e1b-45dd-8414-2a4c2957f443.png"></p>
+<p>这里可以看到明显是有内容的，分析逻辑如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、逐字节读取刚刚输入的key</span><br><span class="line">2、计算离16字节的填充并补齐，经典的PKCS#7填充</span><br><span class="line">3、为404CB0函数准备参数（rcx、r9、r8）</span><br></pre></td></tr></table></figure>
+
+<p>基本可以判断是AES或者SM4</p>
+<p>运行到404F86（调用404CB0函数之前）拿到三个参数</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099180_1773734609629-d4a6be29-6a56-4685-9425-a573ce6515f0.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Key: C2 30 12 AB 39 10 18 33 F8 ED 4E 46 8D A1 5D 8D 8C FB F0 72 68 99 DC 7C 84 6E 7E CF 32 BB DA F8</span><br><span class="line"></span><br><span class="line">IV: AE BA 0D BB CA 26 7F 99 06 ED 7C 70 E3 8D 8B 11</span><br><span class="line"></span><br><span class="line">CipherText: 9B 5E 1E 8F D7 C3 43 62 A2 37 86 C0 CE 3D 3C F4 C3 B6 88 FF 3C 9C 13 D2 BB 6F 49 CE FF 59 A2 5C 36 E4 61 9E 60 61 C3 BB 3F 63 AF 00 3B 3D 8D A7</span><br></pre></td></tr></table></figure>
+
+<p>然而AES和SM4解密都失败了，说明题目对标准加密流程进行了魔改</p>
+<p>跟进404CB0函数内部：</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099183_1773735457196-5e6dcc13-6374-4e0f-96b4-a025cbe04e3f.png"></p>
+<p>这里往栈上压入了一个参数E（十进制14），而加密轮数14的分组密码只有AES，我们上一步解密失败了，最大的可能就是魔改了标准的S盒</p>
+<p>往下看，压栈后调用了404B60函数，直接跟进</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099186_1773736090363-ba6ed5f0-abb1-4b54-b54d-3db1f115262c.png"></p>
+<p>这里就是AES的核心算法，先把内存地址 4071E0 装载到了 r14 寄存器里，然后把明文字节当做索引 rdx，去 r14 也就是 4071E0 这个地址里查表替换，这就是 AES 加密中最核心的字节替换操作，那么4071E0地址就是魔改S盒的地址</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099190_1773736219829-3904ba99-2294-4e3f-a99d-da103546b0ea.png"></p>
+<p>然而进去后发现就是标准的S盒</p>
+<p>接下来就该排查行移位ShiftRows和列混淆MixColumns步骤有没有问题</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099193_1773736764178-9de3879f-4be9-4c48-9f4b-ab9570db52eb.png"></p>
+<p>这里调用了2个函数，分别跟进看一下</p>
+<p>404070：</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099196_1773737025684-853487e0-41c4-41a1-9330-1ca6cbb6d6af.png"></p>
+<p>0, 5, 10, 15、13, 4, 9, 14、8, 13, 2, 7</p>
+<p>正确对应行移位后的矩阵排列</p>
+<p>404190：</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099199_1773737396187-e5ed83fc-daa0-444b-add1-6127fb36345b.png"></p>
+<p>0x1B 是 AES 有限域乘法的标准多项式常数，2 和 3 也是标准的乘法矩阵</p>
+<p>到这里我们总结一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、标准S盒</span><br><span class="line">2、标准行移位</span><br><span class="line">3、标准列混淆</span><br></pre></td></tr></table></figure>
+
+<p>还剩最后一个密钥扩展算法，这里我们想要重新分析算法就比较复杂了，但是最终是要生成好放进内存，直接在密钥生成器之后在内存中获取即可</p>
+<p>重新运行跟进到404B60内部：</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099202_1773738033279-2968aa8b-f913-4cc4-9947-458020d50379.png"></p>
+<p>在字节替换操作之前，调用了一个404940函数，多半就是轮密钥的生成逻辑，运行到此处步过一次，而生成的轮密钥随后就被存放在了rbx寄存器指向的地址，内存窗口中找到</p>
+<p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png"></p>
+<p>正好240字节</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">C2 30 12 AB 39 10 18 33 F8 ED 4E 46 8D A1 5D 8D 8C FB F0 72 68 99 DC 7C 84 6E 7E CF 32 BB DA F8 B4 67 53 88 8D 77 4B BB 75 9A 05 FD F8 3B 58 70 CD 19 9A 23 A5 80 46 5F 21 EE 38 90 13 55 E2 68 58 FF 16 F5 D5 88 5D 4E A0 12 58 B3 58 29 00 C3 A7 BC F9 0D 02 3C BF 52 23 D2 87 C2 30 87 65 AA 5C B2 BA F1 89 3A E7 BF 29 28 BF 0C 71 01 BF CF 04 C0 F1 87 06 FC 4E D5 25 2E C9 17 15 A9 AC BD 9A 23 C0 A8 13 19 27 17 3A 31 98 1B 4B 30 27 D4 B7 C4 3D CF B1 38 73 1A 94 16 BA 0D 81 BF 16 B0 8B 64 27 A4 98 7D 00 B3 A2 4C 98 A8 E9 7C BF 7C A9 D4 35 DF 18 EC 46 C5 8C FA FC C8 0D 45 EA 78 E4 E3 9B 73 7C 9E 9B C0 DE D2 03 68 37 AE BC 14 33 30 50 25 2B DC 16 E0 A7 26 EA 28 AA 63 00 50 2E 80 C8 DF 52 1E 53 1F 8C CC 50 77 BB 62 EC 63</span><br></pre></td></tr></table></figure>
+
+<p>编写自定义轮密钥的解密脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 自定义的轮密钥</span></span><br><span class="line">expanded_key_hex = <span class="string">&quot;C2 30 12 AB 39 10 18 33 F8 ED 4E 46 8D A1 5D 8D 8C FB F0 72 68 99 DC 7C 84 6E 7E CF 32 BB DA F8 B4 67 53 88 8D 77 4B BB 75 9A 05 FD F8 3B 58 70 CD 19 9A 23 A5 80 46 5F 21 EE 38 90 13 55 E2 68 58 FF 16 F5 D5 88 5D 4E A0 12 58 B3 58 29 00 C3 A7 BC F9 0D 02 3C BF 52 23 D2 87 C2 30 87 65 AA 5C B2 BA F1 89 3A E7 BF 29 28 BF 0C 71 01 BF CF 04 C0 F1 87 06 FC 4E D5 25 2E C9 17 15 A9 AC BD 9A 23 C0 A8 13 19 27 17 3A 31 98 1B 4B 30 27 D4 B7 C4 3D CF B1 38 73 1A 94 16 BA 0D 81 BF 16 B0 8B 64 27 A4 98 7D 00 B3 A2 4C 98 A8 E9 7C BF 7C A9 D4 35 DF 18 EC 46 C5 8C FA FC C8 0D 45 EA 78 E4 E3 9B 73 7C 9E 9B C0 DE D2 03 68 37 AE BC 14 33 30 50 25 2B DC 16 E0 A7 26 EA 28 AA 63 00 50 2E 80 C8 DF 52 1E 53 1F 8C CC 50 77 BB 62 EC 63&quot;</span>.replace(<span class="string">&quot; &quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">iv = <span class="built_in">bytes</span>.fromhex(<span class="string">&quot;AEBA0DBBCA267F9906ED7C70E38D8B11&quot;</span>)</span><br><span class="line">ct = <span class="built_in">bytes</span>.fromhex(<span class="string">&quot;9B5E1E8FD7C34362A23786C0CE3D3CF4C3B688FF3C9C13D2BB6F49CEFF59A25C36E4619E6061C3BB3F63AF003B3D8DA7&quot;</span>)</span><br><span class="line"></span><br><span class="line">expanded_key = <span class="built_in">bytes</span>.fromhex(expanded_key_hex)</span><br><span class="line">round_keys = [<span class="built_in">list</span>(expanded_key[i:i+<span class="number">16</span>]) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">240</span>, <span class="number">16</span>)]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 标准S盒、逆S盒</span></span><br><span class="line">SBOX = [</span><br><span class="line">    <span class="number">0x63</span>, <span class="number">0x7C</span>, <span class="number">0x77</span>, <span class="number">0x7B</span>, <span class="number">0xF2</span>, <span class="number">0x6B</span>, <span class="number">0x6F</span>, <span class="number">0xC5</span>, <span class="number">0x30</span>, <span class="number">0x01</span>, <span class="number">0x67</span>, <span class="number">0x2B</span>, <span class="number">0xFE</span>, <span class="number">0xD7</span>, <span class="number">0xAB</span>, <span class="number">0x76</span>,</span><br><span class="line">    <span class="number">0xCA</span>, <span class="number">0x82</span>, <span class="number">0xC9</span>, <span class="number">0x7D</span>, <span class="number">0xFA</span>, <span class="number">0x59</span>, <span class="number">0x47</span>, <span class="number">0xF0</span>, <span class="number">0xAD</span>, <span class="number">0xD4</span>, <span class="number">0xA2</span>, <span class="number">0xAF</span>, <span class="number">0x9C</span>, <span class="number">0xA4</span>, <span class="number">0x72</span>, <span class="number">0xC0</span>,</span><br><span class="line">    <span class="number">0xB7</span>, <span class="number">0xFD</span>, <span class="number">0x93</span>, <span class="number">0x26</span>, <span class="number">0x36</span>, <span class="number">0x3F</span>, <span class="number">0xF7</span>, <span class="number">0xCC</span>, <span class="number">0x34</span>, <span class="number">0xA5</span>, <span class="number">0xE5</span>, <span class="number">0xF1</span>, <span class="number">0x71</span>, <span class="number">0xD8</span>, <span class="number">0x31</span>, <span class="number">0x15</span>,</span><br><span class="line">    <span class="number">0x04</span>, <span class="number">0xC7</span>, <span class="number">0x23</span>, <span class="number">0xC3</span>, <span class="number">0x18</span>, <span class="number">0x96</span>, <span class="number">0x05</span>, <span class="number">0x9A</span>, <span class="number">0x07</span>, <span class="number">0x12</span>, <span class="number">0x80</span>, <span class="number">0xE2</span>, <span class="number">0xEB</span>, <span class="number">0x27</span>, <span class="number">0xB2</span>, <span class="number">0x75</span>,</span><br><span class="line">    <span class="number">0x09</span>, <span class="number">0x83</span>, <span class="number">0x2C</span>, <span class="number">0x1A</span>, <span class="number">0x1B</span>, <span class="number">0x6E</span>, <span class="number">0x5A</span>, <span class="number">0xA0</span>, <span class="number">0x52</span>, <span class="number">0x3B</span>, <span class="number">0xD6</span>, <span class="number">0xB3</span>, <span class="number">0x29</span>, <span class="number">0xE3</span>, <span class="number">0x2F</span>, <span class="number">0x84</span>,</span><br><span class="line">    <span class="number">0x53</span>, <span class="number">0xD1</span>, <span class="number">0x00</span>, <span class="number">0xED</span>, <span class="number">0x20</span>, <span class="number">0xFC</span>, <span class="number">0xB1</span>, <span class="number">0x5B</span>, <span class="number">0x6A</span>, <span class="number">0xCB</span>, <span class="number">0xBE</span>, <span class="number">0x39</span>, <span class="number">0x4A</span>, <span class="number">0x4C</span>, <span class="number">0x58</span>, <span class="number">0xCF</span>,</span><br><span class="line">    <span class="number">0xD0</span>, <span class="number">0xEF</span>, <span class="number">0xAA</span>, <span class="number">0xFB</span>, <span class="number">0x43</span>, <span class="number">0x4D</span>, <span class="number">0x33</span>, <span class="number">0x85</span>, <span class="number">0x45</span>, <span class="number">0xF9</span>, <span class="number">0x02</span>, <span class="number">0x7F</span>, <span class="number">0x50</span>, <span class="number">0x3C</span>, <span class="number">0x9F</span>, <span class="number">0xA8</span>,</span><br><span class="line">    <span class="number">0x51</span>, <span class="number">0xA3</span>, <span class="number">0x40</span>, <span class="number">0x8F</span>, <span class="number">0x92</span>, <span class="number">0x9D</span>, <span class="number">0x38</span>, <span class="number">0xF5</span>, <span class="number">0xBC</span>, <span class="number">0xB6</span>, <span class="number">0xDA</span>, <span class="number">0x21</span>, <span class="number">0x10</span>, <span class="number">0xFF</span>, <span class="number">0xF3</span>, <span class="number">0xD2</span>,</span><br><span class="line">    <span class="number">0xCD</span>, <span class="number">0x0C</span>, <span class="number">0x13</span>, <span class="number">0xEC</span>, <span class="number">0x5F</span>, <span class="number">0x97</span>, <span class="number">0x44</span>, <span class="number">0x17</span>, <span class="number">0xC4</span>, <span class="number">0xA7</span>, <span class="number">0x7E</span>, <span class="number">0x3D</span>, <span class="number">0x64</span>, <span class="number">0x5D</span>, <span class="number">0x19</span>, <span class="number">0x73</span>,</span><br><span class="line">    <span class="number">0x60</span>, <span class="number">0x81</span>, <span class="number">0x4F</span>, <span class="number">0xDC</span>, <span class="number">0x22</span>, <span class="number">0x2A</span>, <span class="number">0x90</span>, <span class="number">0x88</span>, <span class="number">0x46</span>, <span class="number">0xEE</span>, <span class="number">0xB8</span>, <span class="number">0x14</span>, <span class="number">0xDE</span>, <span class="number">0x5E</span>, <span class="number">0x0B</span>, <span class="number">0xDB</span>,</span><br><span class="line">    <span class="number">0xE0</span>, <span class="number">0x32</span>, <span class="number">0x3A</span>, <span class="number">0x0A</span>, <span class="number">0x49</span>, <span class="number">0x06</span>, <span class="number">0x24</span>, <span class="number">0x5C</span>, <span class="number">0xC2</span>, <span class="number">0xD3</span>, <span class="number">0xAC</span>, <span class="number">0x62</span>, <span class="number">0x91</span>, <span class="number">0x95</span>, <span class="number">0xE4</span>, <span class="number">0x79</span>,</span><br><span class="line">    <span class="number">0xE7</span>, <span class="number">0xC8</span>, <span class="number">0x37</span>, <span class="number">0x6D</span>, <span class="number">0x8D</span>, <span class="number">0xD5</span>, <span class="number">0x4E</span>, <span class="number">0xA9</span>, <span class="number">0x6C</span>, <span class="number">0x56</span>, <span class="number">0xF4</span>, <span class="number">0xEA</span>, <span class="number">0x65</span>, <span class="number">0x7A</span>, <span class="number">0xAE</span>, <span class="number">0x08</span>,</span><br><span class="line">    <span class="number">0xBA</span>, <span class="number">0x78</span>, <span class="number">0x25</span>, <span class="number">0x2E</span>, <span class="number">0x1C</span>, <span class="number">0xA6</span>, <span class="number">0xB4</span>, <span class="number">0xC6</span>, <span class="number">0xE8</span>, <span class="number">0xDD</span>, <span class="number">0x74</span>, <span class="number">0x1F</span>, <span class="number">0x4B</span>, <span class="number">0xBD</span>, <span class="number">0x8B</span>, <span class="number">0x8A</span>,</span><br><span class="line">    <span class="number">0x70</span>, <span class="number">0x3E</span>, <span class="number">0xB5</span>, <span class="number">0x66</span>, <span class="number">0x48</span>, <span class="number">0x03</span>, <span class="number">0xF6</span>, <span class="number">0x0E</span>, <span class="number">0x61</span>, <span class="number">0x35</span>, <span class="number">0x57</span>, <span class="number">0xB9</span>, <span class="number">0x86</span>, <span class="number">0xC1</span>, <span class="number">0x1D</span>, <span class="number">0x9E</span>,</span><br><span class="line">    <span class="number">0xE1</span>, <span class="number">0xF8</span>, <span class="number">0x98</span>, <span class="number">0x11</span>, <span class="number">0x69</span>, <span class="number">0xD9</span>, <span class="number">0x8E</span>, <span class="number">0x94</span>, <span class="number">0x9B</span>, <span class="number">0x1E</span>, <span class="number">0x87</span>, <span class="number">0xE9</span>, <span class="number">0xCE</span>, <span class="number">0x55</span>, <span class="number">0x28</span>, <span class="number">0xDF</span>,</span><br><span class="line">    <span class="number">0x8C</span>, <span class="number">0xA1</span>, <span class="number">0x89</span>, <span class="number">0x0D</span>, <span class="number">0xBF</span>, <span class="number">0xE6</span>, <span class="number">0x42</span>, <span class="number">0x68</span>, <span class="number">0x41</span>, <span class="number">0x99</span>, <span class="number">0x2D</span>, <span class="number">0x0F</span>, <span class="number">0xB0</span>, <span class="number">0x54</span>, <span class="number">0xBB</span>, <span class="number">0x16</span></span><br><span class="line">]</span><br><span class="line">INV_SBOX = [<span class="number">0</span>] * <span class="number">256</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>): INV_SBOX[SBOX[i]] = i</span><br><span class="line"></span><br><span class="line"><span class="comment"># 逆向移位</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">inv_shift_rows</span>(<span class="params">s</span>):</span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">        s[<span class="number">0</span>],  s[<span class="number">13</span>], s[<span class="number">10</span>], s[<span class="number">7</span>],</span><br><span class="line">        s[<span class="number">4</span>],  s[<span class="number">1</span>],  s[<span class="number">14</span>], s[<span class="number">11</span>],</span><br><span class="line">        s[<span class="number">8</span>],  s[<span class="number">5</span>],  s[<span class="number">2</span>],  s[<span class="number">15</span>],</span><br><span class="line">        s[<span class="number">12</span>], s[<span class="number">9</span>],  s[<span class="number">6</span>],  s[<span class="number">3</span>]</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gf_mult</span>(<span class="params">a, b</span>):</span><br><span class="line">    p = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">8</span>):</span><br><span class="line">        <span class="keyword">if</span> b &amp; <span class="number">1</span>: p ^= a</span><br><span class="line">        hi_bit_set = a &amp; <span class="number">0x80</span></span><br><span class="line">        a = (a &lt;&lt; <span class="number">1</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">        <span class="keyword">if</span> hi_bit_set: a ^= <span class="number">0x1b</span></span><br><span class="line">        b &gt;&gt;= <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> p</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">inv_mix_columns</span>(<span class="params">s</span>):</span><br><span class="line">    out = [<span class="number">0</span>] * <span class="number">16</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">16</span>, <span class="number">4</span>):</span><br><span class="line">        c = s[i:i+<span class="number">4</span>]</span><br><span class="line">        out[i]   = gf_mult(<span class="number">0x0e</span>, c[<span class="number">0</span>]) ^ gf_mult(<span class="number">0x0b</span>, c[<span class="number">1</span>]) ^ gf_mult(<span class="number">0x0d</span>, c[<span class="number">2</span>]) ^ gf_mult(<span class="number">0x09</span>, c[<span class="number">3</span>])</span><br><span class="line">        out[i+<span class="number">1</span>] = gf_mult(<span class="number">0x09</span>, c[<span class="number">0</span>]) ^ gf_mult(<span class="number">0x0e</span>, c[<span class="number">1</span>]) ^ gf_mult(<span class="number">0x0b</span>, c[<span class="number">2</span>]) ^ gf_mult(<span class="number">0x0d</span>, c[<span class="number">3</span>])</span><br><span class="line">        out[i+<span class="number">2</span>] = gf_mult(<span class="number">0x0d</span>, c[<span class="number">0</span>]) ^ gf_mult(<span class="number">0x09</span>, c[<span class="number">1</span>]) ^ gf_mult(<span class="number">0x0e</span>, c[<span class="number">2</span>]) ^ gf_mult(<span class="number">0x0b</span>, c[<span class="number">3</span>])</span><br><span class="line">        out[i+<span class="number">3</span>] = gf_mult(<span class="number">0x0b</span>, c[<span class="number">0</span>]) ^ gf_mult(<span class="number">0x0d</span>, c[<span class="number">1</span>]) ^ gf_mult(<span class="number">0x09</span>, c[<span class="number">2</span>]) ^ gf_mult(<span class="number">0x0e</span>, c[<span class="number">3</span>])</span><br><span class="line">    <span class="keyword">return</span> out</span><br><span class="line"></span><br><span class="line"><span class="comment"># AES解密</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt_block</span>(<span class="params">block, round_keys</span>):</span><br><span class="line">    state = <span class="built_in">list</span>(block)</span><br><span class="line">    <span class="comment"># 第一步：异或最后一轮密钥 (Round 14)</span></span><br><span class="line">    state = [a ^ b <span class="keyword">for</span> a, b <span class="keyword">in</span> <span class="built_in">zip</span>(state, round_keys[<span class="number">14</span>])]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 中间 13 轮逆向推导</span></span><br><span class="line">    <span class="keyword">for</span> round_idx <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">13</span>, <span class="number">0</span>, -<span class="number">1</span>):</span><br><span class="line">        state = inv_shift_rows(state)</span><br><span class="line">        state = [INV_SBOX[b] <span class="keyword">for</span> b <span class="keyword">in</span> state]</span><br><span class="line">        state = [a ^ b <span class="keyword">for</span> a, b <span class="keyword">in</span> <span class="built_in">zip</span>(state, round_keys[round_idx])]</span><br><span class="line">        state = inv_mix_columns(state)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 最后一轮 (Round 0)</span></span><br><span class="line">    state = inv_shift_rows(state)</span><br><span class="line">    state = [INV_SBOX[b] <span class="keyword">for</span> b <span class="keyword">in</span> state]</span><br><span class="line">    state = [a ^ b <span class="keyword">for</span> a, b <span class="keyword">in</span> <span class="built_in">zip</span>(state, round_keys[<span class="number">0</span>])]</span><br><span class="line">    <span class="keyword">return</span> state</span><br><span class="line"></span><br><span class="line"><span class="comment"># CBC 解密链</span></span><br><span class="line">pt = <span class="built_in">bytearray</span>()</span><br><span class="line">prev = <span class="built_in">list</span>(iv)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(ct), <span class="number">16</span>):</span><br><span class="line">    block = ct[i:i+<span class="number">16</span>]</span><br><span class="line">    dec_block = decrypt_block(block, round_keys)</span><br><span class="line">    pt_block = [a ^ b <span class="keyword">for</span> a, b <span class="keyword">in</span> <span class="built_in">zip</span>(dec_block, prev)]</span><br><span class="line">    pt.extend(pt_block)</span><br><span class="line">    prev = block</span><br><span class="line"></span><br><span class="line"><span class="comment"># 去除PKCS#7填充</span></span><br><span class="line">pad_len = pt[-<span class="number">1</span>]</span><br><span class="line">flag = pt[:-pad_len].decode(<span class="string">&#x27;utf-8&#x27;</span>, errors=<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(flag)</span><br></pre></td></tr></table></figure>
+
+<h1 id="FLAG"><a href="#FLAG" class="headerlink" title="FLAG"></a>FLAG</h1><p><img src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888099209_1773739233868-6049881d-2574-4e7a-8f34-78553798ee97.png"></p>
+<p>得到flag：dart{c3d4f5cc-8aab-46ce-a188-2fc453f3b288}</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://y5neko.github.io">Y5neKO</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://y5neko.github.io/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are2/">https://y5neko.github.io/2026/03/19/某国赛CTF逆向题目Writeup：re2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://y5neko.github.io" target="_blank">Y5neKO's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E9%80%86%E5%90%91/">逆向</a><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post-share"><div class="social-share" data-image="/image/HAMT_1773888099206_1773738515576-4e804b2b-f2c4-4672-982e-0af4f26be7fc.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are3/" title="某国赛CTF逆向题目Writeup：re3"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888131337_1773845355948-6cda923d-6d10-456c-b7d1-240326e14eaf.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">某国赛CTF逆向题目Writeup：re3</div></div><div class="info-2"><div class="info-item-1">题目 一个ELF和流量包，先看看流量包  是一个客户端的tcp通信流量，看样子是加密文件内容  ELF则是linux版本的PyInstaller引导程序，直接pyinstxtractor解包   得到了一堆pyc和相关环境文件，大部分都是依赖，client.pyc应该是我们要分析的文件 反编译尝试通过pycdc反编译获取源码  反编译失败，看样子是做了混淆，直接反编译字节码分析  可以看到_1667常量是一段加密，同时看到了b85decode函数名，应该就是base85，解码 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495969798991001011021031041051061071081091101111121131141151161171181191201211...</div></div></div></a><a class="pagination-related" href="/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are1/" title="某国赛CTF逆向题目Writeup：re1"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773887758725_1773672957368-258a9011-3154-40a0-b940-0ae817729517.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">某国赛CTF逆向题目Writeup：re1</div></div><div class="info-2"><div class="info-item-1">题目 Loader ida分析  发现是打包的python源码，通过python3、ffmpeg等进行处理 逻辑如下： 12341. 检查 video.mp4 文件是否存在2. 解码嵌入的 Base64 数据 → 生成 stager.pyc3. 设置执行权限 (chmod 0x1ED = 0755)4. 通过 python3 stager.pyc 执行 Python 脚本  提取中间的base64解码得到pyc文件 12Qg0NCgAAAABK5llpWgkAAOMAAAAAAAAAAAAAAAAFAAAAQAAAAHN6AAAAZABkAWwAbQFaAQEAZABkAmwCWgJkAGQCbANaA2QAZAJsBFoEZABkAmwFWgZkAGQCbAdaB2QAZANsCG0IWggBAGQOZAlkCoQBWgllCmQLawJydmQMWgtlA2oMoA1lC6EBcmxlCWULgwEBAG4KZQSgDmQNoQEBAGQCUwApD+kAAAAAKQHaBUltYWdlTikB2gR0cWRt6YACAADp4AEAAOkIAAAA6QoAAAD6CXZpZ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are1/" title="某国赛CTF逆向题目Writeup：re1"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773887758725_1773672957368-258a9011-3154-40a0-b940-0ae817729517.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">某国赛CTF逆向题目Writeup：re1</div></div><div class="info-2"><div class="info-item-1">题目 Loader ida分析  发现是打包的python源码，通过python3、ffmpeg等进行处理 逻辑如下： 12341. 检查 video.mp4 文件是否存在2. 解码嵌入的 Base64 数据 → 生成 stager.pyc3. 设置执行权限 (chmod 0x1ED = 0755)4. 通过 python3 stager.pyc 执行 Python 脚本  提取中间的base64解码得到pyc文件 12Qg0NCgAAAABK5llpWgkAAOMAAAAAAAAAAAAAAAAFAAAAQAAAAHN6AAAAZABkAWwAbQFaAQEAZABkAmwCWgJkAGQCbANaA2QAZAJsBFoEZABkAmwFWgZkAGQCbAdaB2QAZANsCG0IWggBAGQOZAlkCoQBWgllCmQLawJydmQMWgtlA2oMoA1lC6EBcmxlCWULgwEBAG4KZQSgDmQNoQEBAGQCUwApD+kAAAAAKQHaBUltYWdlTikB2gR0cWRt6YACAADp4AEAAOkIAAAA6QoAAAD6CXZpZ...</div></div></div></a><a class="pagination-related" href="/2026/03/19/%E6%9F%90%E5%9B%BD%E8%B5%9BCTF%E9%80%86%E5%90%91%E9%A2%98%E7%9B%AEWriteup%EF%BC%9Are3/" title="某国赛CTF逆向题目Writeup：re3"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/HAMT_1773888131337_1773845355948-6cda923d-6d10-456c-b7d1-240326e14eaf.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-03-19</div><div class="info-item-2">某国赛CTF逆向题目Writeup：re3</div></div><div class="info-2"><div class="info-item-1">题目 一个ELF和流量包，先看看流量包  是一个客户端的tcp通信流量，看样子是加密文件内容  ELF则是linux版本的PyInstaller引导程序，直接pyinstxtractor解包   得到了一堆pyc和相关环境文件，大部分都是依赖，client.pyc应该是我们要分析的文件 反编译尝试通过pycdc反编译获取源码  反编译失败，看样子是做了混淆，直接反编译字节码分析  可以看到_1667常量是一段加密，同时看到了b85decode函数名，应该就是base85，解码 1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950515253545556575859606162636465666768697071727374757677787980818283848586878889909192939495969798991001011021031041051061071081091101111121131141151161171181191201211...</div></div></div></a><a class="pagination-related" href="/2024/03/25/IDA%20Pro%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8D%97/" title="IDA Pro操作指南"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240329103100.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-25</div><div class="info-item-2">IDA Pro操作指南</div></div><div class="info-2"><div class="info-item-1">摘要工具nm将源文件编译成目标文件时，编译器必须嵌入一些全局(外部)符号的位置信息，以便链接器在组合目标文件以创建可执行文件时，能够解析对这些符号的引用。除非被告知要去除最终的可执行文件中的符号，否则，链接器通常会将目标文件中的符号带入最终的可执行文件中。根据nm手册的描述，这一实用工具的目的是“列举目标文件中的符号”。使用rm检查中间目标文件(扩展名为.0的文件，而非可执行文件)时，默认输出结果是在这个文件中声明的任何函数和全局变量的名称。nm实用工具的样本输出如下所示。从中可以看到，m列出了每一个符号以及与符号有关的一些信息。其中的字母表示所列举的符号的类型。前面的例子中出现了以下字母，下面逐一解释。U，未定义符号，通常为外部符号引用。T，在文本部分定义的符号，通常为函数名称。t，在文本部分定义的局部符号。在C程序中，这个符号通常等同于一个静态函数。D，已初始化的数据值。C，未初始化的数据值。  大写字母表示全局符号，小写字母则表示局部符号。请参阅nm手册了解有关字母代码的详细解释。  如果使用nm列举可执行文件中的符号，将会有更多信息显示出来。在链接过程中，符号被解析成虚拟...</div></div></div></a><a class="pagination-related" href="/2024/03/28/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" title="数据结构"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240328112106.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-28</div><div class="info-item-2">数据结构</div></div><div class="info-2"><div class="info-item-1">PE结构 ## 概念 **PE**(Portable Execute)文件是Windows下可执行文件的总称，常见的有 DLL，EXE，OCX，SYS 等。它是微软在 UNIX 平台的 COFF(通用对象文件格式)基础上制作而成。最初设计用来提高程序在不同操作系统上的移植性，但实际上这种文件格式仅用在 Windows 系列操作系统下。PE文件是指 32 位可执行文件，也称为PE32。64位的可执行文件称为 PE+ 或 PE32+，是PE(PE32)的一种扩展形式(不是PE64)。     名称 描述    地址 是 “虚拟地址” 而不是“物理地址”。不是“物理地址”的原因shi数据在内存的位置经常在变，这样可以节省内存开支、避开错误的内存位置等的优势。同时用户并不需要知道具体的“真实地址”，因为系统自己会为程序准备好内存空间的(只要内存足够大)   节 节 是 PE 文件中 代码 或 数据 的基本单元。原则上讲，节只分为 “代码节” 和 “数据节” 。   镜像文件 包含以 EXE 文件为代表的 “可执行文件”、以DLL文件为代表的“动态链接库”。因为他们常常被直接“复制”到内存...</div></div></div></a><a class="pagination-related" href="/2024/03/27/%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80/" title="汇编语言"><img class="cover" src="/img/friend_404.gif" data-lazy-src="/image/Pasted%20image%2020240327152412.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-03-27</div><div class="info-item-2">汇编语言</div></div><div class="info-2"><div class="info-item-1">概念CPU 只负责计算，本身不具备智能。你输入一条指令（instruction），它就运行一次，然后停下来，等待下一条指令。这些指令都是二进制的，称为操作码（opcode），比如加法指令就是00000011。编译器的作用，就是将高级语言写好的程序，翻译成一条条操作码。对于人类来说，二进制程序是不可读的，根本看不出来机器干了什么。为了解决可读性的问题，以及偶尔的编辑需求，就诞生了汇编语言。 汇编语言是二进制指令的文本形式，与指令是一一对应的关系。比如，加法指令00000011写成汇编语言就是 ADD。只要还原成二进制，汇编语言就可以被 CPU 直接执行，所以它是最底层的低级语言。 寄存器CPU 本身只负责运算，不负责储存数据。数据一般都储存在内存之中，CPU 要用的时候就去内存读写数据。但是，CPU 的运算速度远高于内存的读写速度，为了避免被拖慢，CPU 都自带一级缓存和二级缓存。基本上，CPU 缓存可以看作是读写速度较快的内存。 但是，CPU 缓存还是不够快，另外数据在缓存里面的地址是不固定的，CPU 每次读写都要寻址也会拖慢速度。因此，除了缓存之外，CPU 还自带了寄存器（re...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%84%B1%E5%A3%B3"><span class="toc-number">1.</span> <span class="toc-text">脱壳</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%82EXE"><span class="toc-number">2.</span> <span class="toc-text">第一层EXE</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%82EXE"><span class="toc-number">3.</span> <span class="toc-text">第二层EXE</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#FLAG"><span class="toc-number">4.</span> <span class="toc-text">FLAG</span></a></li></ol></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2026 By Y5neKO</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.1"></script><script src="/js/main.js?v=5.5.1"></script><script src="/js/tw_cn.js?v=5.5.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: '4d2d58bafea4c026b68f',
+      clientSecret: '61a3976d66520d7bfd80d2de0e9e60fe31820603',
+      repo: 'y5neko.github.io',
+      owner: 'Y5neKO',
+      admin: ['Y5neKO'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || 'a7442fdbef4b0e50f5549c172368dc5b'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
+
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (false && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '暂无评论'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'github-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const findTrueUrl = (array, ele) => {
+    Promise.all(array.map(item =>
+      fetch(item.url).then(resp => resp.json()).then(data => {
+        let urlArray = data.body ? data.body.match(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/ig) : []
+        if (!Array.isArray(urlArray) || urlArray.length === 0) {
+          urlArray = [`${data.html_url}`]
+        }
+        if (data.user.login === 'utterances-bot') {
+          return urlArray.pop()
+        } else {
+          return urlArray.shift()
+        }
+      })
+    )).then(res => {
+        array = array.map((i,index)=> {
+          return {
+            ...i,
+            url: res[index]
+          }
+        })
+
+        btf.saveToLocal.set(keyName, JSON.stringify(array), 3/(60*24))
+        generateHtml(array, ele)
+    });
+  }
+
+  const getComment = ele => {
+    fetch('https://api.github.com/repos/Y5neKO/y5neko.github.io/issues/comments?sort=updated&direction=desc&per_page=3&page=1',{
+      "headers": {
+        Accept: 'application/vnd.github.v3.html+json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        const githubArray = data.map(item => {
+          return {
+            'avatar': item.user.avatar_url,
+            'content': changeContent(item.body_html || item.body),
+            'nick': item.user.login,
+            'url': item.issue_url,
+            'date': item.updated_at
+          }
+        })
+        findTrueUrl(githubArray, ele)
+      }).catch(e => {
+        console.error(e)
+        ele.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+  }
+  run(keyName, getComment)
+})</script><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true
+        ? (usePjax ? pjax.loadUrl('/404.html') : window.location.href = '/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.1"></script></div></div></body></html>
